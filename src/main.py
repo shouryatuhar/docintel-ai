@@ -8,11 +8,18 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from outline_extractor import write_outline_json
-from output_formatter import build_output_json
-from pdf_reader import extract_text_by_page
-from relevance_scorer import rank_sections
-from section_splitter import split_sections
+try:
+    from .outline_extractor import write_outline_json
+    from .output_formatter import build_output_json
+    from .pdf_reader import extract_text_by_page
+    from .relevance_scorer import rank_sections
+    from .section_splitter import split_sections
+except ImportError:  # pragma: no cover - supports direct CLI execution
+    from outline_extractor import write_outline_json
+    from output_formatter import build_output_json
+    from pdf_reader import extract_text_by_page
+    from relevance_scorer import rank_sections
+    from section_splitter import split_sections
 
 INPUT_MANIFEST = "challenge1b_input.json"
 PDF_SUFFIX = ".pdf"

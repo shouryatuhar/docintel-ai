@@ -11,20 +11,36 @@ from typing import Any
 from pdfminer.high_level import extract_pages
 from pdfminer.layout import LTTextContainer
 
-from heading_logic import (
-    MIN_HEADING_SCORE,
-    MIN_LETTER_COUNT,
-    clean_heading,
-    compute_size_thresholds,
-    extract_font_styles,
-    is_skipped_line,
-    iter_heading_candidates,
-    level_for_size,
-    line_font_info,
-    merge_multiline_headings,
-    normalize_for_match,
-    score_heading,
-)
+try:
+    from .heading_logic import (
+        MIN_HEADING_SCORE,
+        MIN_LETTER_COUNT,
+        clean_heading,
+        compute_size_thresholds,
+        extract_font_styles,
+        is_skipped_line,
+        iter_heading_candidates,
+        level_for_size,
+        line_font_info,
+        merge_multiline_headings,
+        normalize_for_match,
+        score_heading,
+    )
+except ImportError:  # pragma: no cover - supports direct CLI execution
+    from heading_logic import (
+        MIN_HEADING_SCORE,
+        MIN_LETTER_COUNT,
+        clean_heading,
+        compute_size_thresholds,
+        extract_font_styles,
+        is_skipped_line,
+        iter_heading_candidates,
+        level_for_size,
+        line_font_info,
+        merge_multiline_headings,
+        normalize_for_match,
+        score_heading,
+    )
 
 
 def extract_headings_and_title(pdf_path: str | Path) -> tuple[str, list[dict[str, Any]]]:

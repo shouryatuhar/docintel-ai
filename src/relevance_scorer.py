@@ -21,7 +21,10 @@ def rank_sections(
         return []
 
     combined_query = f"{persona} {job}".strip()
-    texts = [section["text"] for section in sections]
+    texts = [
+        f"{section['section_title']} {section['section_title']} {section['text']}".strip()
+        for section in sections
+    ]
     vectorizer = TfidfVectorizer(stop_words="english")
     vectors = vectorizer.fit_transform([combined_query] + texts)
     similarities = cosine_similarity(vectors[0:1], vectors[1:]).flatten()

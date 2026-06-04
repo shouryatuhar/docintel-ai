@@ -5,12 +5,47 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from heading_logic import (
-    compute_size_thresholds,
-    extract_font_styles,
-    merge_multiline_headings,
-)
-from outline_extractor import iter_classified_lines
+try:
+    from .heading_logic import (
+        compute_size_thresholds,
+        extract_font_styles,
+        merge_multiline_headings,
+    )
+    from .outline_extractor import iter_classified_lines
+except ImportError:  # pragma: no cover - supports direct CLI execution
+    from heading_logic import (
+        compute_size_thresholds,
+        extract_font_styles,
+        merge_multiline_headings,
+    )
+    from outline_extractor import iter_classified_lines
+
+MAX_SECTION_TITLE_LENGTH = 80
+INVALID_TITLE_ENDINGS = {
+    "a",
+    "an",
+    "and",
+    "are",
+    "in",
+    "is",
+    "of",
+    "or",
+    "the",
+    "to",
+    "with",
+}
+
+
+def is_valid_section_title(text: str) -> bool:
+    """Return whether a candidate heading is safe to use as a section title."""
+    words = text.split()
+    if len(text) > MAX_SECTION_TITLE_LENGTH or len(words) < 2:
+        return False
+    if not text or text[0].islower():
+        return False
+    if words[-1].lower().strip(".,;:!?") in INVALID_TITLE_ENDINGS:
+        return False
+    return True
 
 
 def split_sections(document_name: str, pdf_path: str | Path) -> list[dict[str, Any]]:
@@ -21,7 +56,6 @@ def split_sections(document_name: str, pdf_path: str | Path) -> list[dict[str, A
     current_title: str | None = None
     current_page = 1
     body_parts: list[str] = []
-    preamble_parts: list[str] = []
     index = 0
 
     def flush_section() -> None:
@@ -52,18 +86,22 @@ def split_sections(document_name: str, pdf_path: str | Path) -> list[dict[str, A
                 index += 1
 
             merged = merge_multiline_headings(heading_batch)
-            flush_section()
-            if merged:
-                current_title = merged[0]["text"]
-                current_page = merged[0]["page"]
-                body_parts = preamble_parts.copy()
-                preamble_parts = []
+            valid_heading = next(
+                (item for item in merged if is_valid_section_title(item["text"])),
+                None,
+            )
+            if valid_heading:
+                flush_section()
+                current_title = valid_heading["text"]
+                current_page = valid_heading["page"]
+                body_parts = []
             continue
 
-        if current_title is None:
-            preamble_parts.append(line["text"])
-            index += 1
-            continue
+        if current_title is None or current_page != line["page"]:
+            flush_section()
+            current_title = f"Page {line['page']}"
+            current_page = line["page"]
+            body_parts = []
         body_parts.append(line["text"])
         index += 1
 

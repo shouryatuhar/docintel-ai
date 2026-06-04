@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DocIntel AI</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1020;
+      --bg-accent: #131b33;
+      --panel: rgba(15, 23, 42, 0.88);
+      --panel-border: rgba(148, 163, 184, 0.18);
+      --text: #e5eefb;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-strong: #22d3ee;
+      --danger: #fb7185;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "SF Mono", "Menlo", "Monaco", monospace;
+      background:
+        radial-gradient(circle at top, rgba(56, 189, 248, 0.14), transparent 30%),
+        linear-gradient(180deg, #050816 0%, var(--bg) 100%);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .shell {
+      width: min(980px, 100%);
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(14px);
+    }
+
+    .hero {
+      padding: 28px 28px 18px;
+      border-bottom: 1px solid var(--panel-border);
+      background: linear-gradient(180deg, rgba(19, 27, 51, 0.96), rgba(11, 16, 32, 0.72));
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      max-width: 62ch;
+      line-height: 1.6;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      padding: 18px 28px 0;
+      flex-wrap: wrap;
+    }
+
+    .tab-button {
+      border: 1px solid var(--panel-border);
+      background: rgba(15, 23, 42, 0.8);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: 160ms ease;
+    }
+
+    .tab-button.active {
+      color: #04111d;
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      border-color: transparent;
+    }
+
+    .content {
+      display: grid;
+      gap: 20px;
+      padding: 24px 28px 28px;
+    }
+
+    .panel {
+      display: none;
+      gap: 18px;
+    }
+
+    .panel.active {
+      display: grid;
+    }
+
+    .card {
+      background: rgba(2, 6, 23, 0.58);
+      border: 1px solid var(--panel-border);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+
+    input[type="text"],
+    textarea,
+    input[type="file"] {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text);
+      padding: 12px 14px;
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    button.submit {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, #0ea5e9, #22d3ee);
+      color: #03131f;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .status {
+      min-height: 1.25rem;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .status.error {
+      color: var(--danger);
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #020617;
+      border-radius: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      padding: 18px;
+      min-height: 260px;
+      overflow: auto;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 14px;
+      }
+
+      .hero,
+      .tabs,
+      .content {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <h1>DocIntel AI</h1>
+      <p class="subtitle">Upload PDFs, extract clean heading outlines, or rank the most relevant sections for a persona and job-to-be-done.</p>
+    </section>
+
+    <nav class="tabs">
+      <button class="tab-button active" data-tab="outline">Outline Extractor</button>
+      <button class="tab-button" data-tab="persona">Persona Intelligence</button>
+    </nav>
+
+    <section class="content">
+      <div id="outline" class="panel active">
+        <div class="card">
+          <label for="outline-file">PDF file</label>
+          <input id="outline-file" type="file" accept="application/pdf,.pdf">
+        </div>
+        <div class="card">
+          <button id="outline-submit" class="submit">Extract Outline</button>
+          <p id="outline-status" class="status"></p>
+        </div>
+        <pre id="outline-result">{
+  "title": "",
+  "outline": []
+}</pre>
+      </div>
+
+      <div id="persona" class="panel">
+        <div class="card">
+          <label for="persona-files">PDF files</label>
+          <input id="persona-files" type="file" accept="application/pdf,.pdf" multiple>
+        </div>
+        <div class="card">
+          <label for="persona-input">Persona</label>
+          <input id="persona-input" type="text" placeholder="Travel Planner">
+          <label for="job-input" style="margin-top: 14px;">Job to be done</label>
+          <textarea id="job-input" placeholder="Plan a 4-day trip for a family with children."></textarea>
+        </div>
+        <div class="card">
+          <button id="persona-submit" class="submit">Rank Sections</button>
+          <p id="persona-status" class="status"></p>
+        </div>
+        <pre id="persona-result">{
+  "metadata": {},
+  "extracted_sections": [],
+  "subsection_analysis": []
+}</pre>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const tabs = document.querySelectorAll(".tab-button");
+    const panels = document.querySelectorAll(".panel");
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        tabs.forEach((button) => button.classList.remove("active"));
+        panels.forEach((panel) => panel.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById(tab.dataset.tab).classList.add("active");
+      });
+    });
+
+    function setStatus(element, message, isError = false) {
+      element.textContent = message;
+      element.classList.toggle("error", isError);
+    }
+
+    async function postForm(url, formData) {
+      const response = await fetch(url, {
+        method: "POST",
+        body: formData
+      });
+
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(payload.detail || "Request failed");
+      }
+      return payload;
+    }
+
+    document.getElementById("outline-submit").addEventListener("click", async () => {
+      const fileInput = document.getElementById("outline-file");
+      const status = document.getElementById("outline-status");
+      const result = document.getElementById("outline-result");
+
+      if (!fileInput.files.length) {
+        setStatus(status, "Choose a PDF first.", true);
+        return;
+      }
+
+      setStatus(status, "Processing outline...");
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+
+      try {
+        const payload = await postForm("/outline", formData);
+        result.textContent = JSON.stringify(payload, null, 2);
+        setStatus(status, "Outline extracted.");
+      } catch (error) {
+        setStatus(status, error.message, true);
+      }
+    });
+
+    document.getElementById("persona-submit").addEventListener("click", async () => {
+      const filesInput = document.getElementById("persona-files");
+      const personaInput = document.getElementById("persona-input");
+      const jobInput = document.getElementById("job-input");
+      const status = document.getElementById("persona-status");
+      const result = document.getElementById("persona-result");
+
+      if (!filesInput.files.length) {
+        setStatus(status, "Upload at least one PDF.", true);
+        return;
+      }
+
+      if (!personaInput.value.trim() || !jobInput.value.trim()) {
+        setStatus(status, "Persona and job are both required.", true);
+        return;
+      }
+
+      setStatus(status, "Ranking relevant sections...");
+      const formData = new FormData();
+      Array.from(filesInput.files).forEach((file) => formData.append("files", file));
+      formData.append("persona", personaInput.value.trim());
+      formData.append("job", jobInput.value.trim());
+
+      try {
+        const payload = await postForm("/persona", formData);
+        result.textContent = JSON.stringify(payload, null, 2);
+        setStatus(status, "Ranking complete.");
+      } catch (error) {
+        setStatus(status, error.message, true);
+      }
+    });
+  </script>
+</body>
+</html>
