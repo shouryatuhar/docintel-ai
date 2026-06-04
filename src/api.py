@@ -58,6 +58,7 @@ async def serve_frontend() -> FileResponse:
 
 
 @app.post("/outline")
+@app.post("/api/outline")
 async def outline(file: UploadFile = File(...)) -> dict:
     """Extract a title and heading outline from one PDF."""
     with TemporaryDirectory() as temp_dir:
@@ -69,6 +70,7 @@ async def outline(file: UploadFile = File(...)) -> dict:
 
 
 @app.post("/persona")
+@app.post("/api/persona")
 async def persona(
     files: list[UploadFile] = File(...),
     persona: str = Form(...),

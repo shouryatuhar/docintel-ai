@@ -8,6 +8,8 @@
 
 DocIntel AI turns PDF collections into structured JSON: hierarchical outlines for navigation, or ranked sections tailored to a user persona and task. It runs fully on CPU with no network calls—ideal for air-gapped environments, batch pipelines, and reproducible document workflows.
 
+Live app: [https://docintel-ae3ewvnlr-shouryatuhars-projects.vercel.app](https://docintel-ae3ewvnlr-shouryatuhars-projects.vercel.app)
+
 ---
 
 ## How it works
