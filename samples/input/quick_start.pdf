@@ -1,0 +1,44 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 421 >>
+stream
+BT
+/F2 20 Tf 72 750 Td (Product Guide) Tj
+/F2 14 Tf 72 710 Td (Introduction) Tj
+/F1 11 Tf 72 682 Td (This guide explains core features and setup steps for new users.) Tj
+/F2 14 Tf 72 654 Td (Key Features) Tj
+/F1 11 Tf 72 626 Td (Offline processing, heading extraction, and persona-driven ranking.) Tj
+/F2 12 Tf 72 598 Td (Summary) Tj
+/F1 11 Tf 72 570 Td (DocIntel AI runs entirely on CPU with no external services.) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+6 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+xref
+0 7
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000251 00000 n 
+0000000723 00000 n 
+0000000793 00000 n 
+trailer
+<< /Size 7 /Root 1 0 R >>
+startxref
+868
+%%EOF

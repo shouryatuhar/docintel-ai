@@ -1,0 +1,14 @@
+services:
+  outline:
+    build: .
+    volumes:
+      - ./samples/input:/data/input:ro
+      - ./samples/output:/data/output
+    command: ["--mode", "outline", "--input", "/data/input", "--output", "/data/output"]
+
+  persona:
+    build: .
+    volumes:
+      - ./samples/persona:/data/input:ro
+      - ./samples/persona/output:/data/output
+    command: ["--mode", "persona", "--input", "/data/input", "--output", "/data/output"]

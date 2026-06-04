@@ -1,0 +1,25 @@
+{
+  "title": "Summary",
+  "outline": [
+    {
+      "level": "H1",
+      "text": "Summary",
+      "page": 1
+    },
+    {
+      "level": "H1",
+      "text": "Key Features",
+      "page": 1
+    },
+    {
+      "level": "H1",
+      "text": "Introduction",
+      "page": 1
+    },
+    {
+      "level": "H1",
+      "text": "Product Guide",
+      "page": 1
+    }
+  ]
+}

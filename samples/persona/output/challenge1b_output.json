@@ -1,0 +1,37 @@
+{
+    "metadata": {
+        "input_documents": [
+            "destinations.pdf",
+            "packing_tips.pdf"
+        ],
+        "persona": "Travel Planner",
+        "job_to_be_done": "Plan a trip of 4 days for a group of 10 college friends.",
+        "processing_timestamp": "2026-06-04T14:08:18.553327+00:00"
+    },
+    "extracted_sections": [
+        {
+            "document": "destinations.pdf",
+            "section_title": "Coastal Adventures",
+            "importance_rank": 1,
+            "page_number": 1
+        },
+        {
+            "document": "packing_tips.pdf",
+            "section_title": "General Packing Tips",
+            "importance_rank": 2,
+            "page_number": 1
+        }
+    ],
+    "subsection_analysis": [
+        {
+            "document": "destinations.pdf",
+            "refined_text": "Beach hopping along the Mediterranean includes Nice and Antibes. Plan sailing and snorkeling for a four-day college trip.",
+            "page_number": 1
+        },
+        {
+            "document": "packing_tips.pdf",
+            "refined_text": "Pack layers, travel-sized toiletries, and reusable bags. Bring a first aid kit and document copies for group travel.",
+            "page_number": 1
+        }
+    ]
+}
