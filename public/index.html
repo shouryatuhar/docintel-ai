@@ -420,14 +420,12 @@
     }
 
     .status-container.loading {
-      display: flex;
       background-color: var(--bg-sidebar);
       border: 1px solid var(--border-color);
       color: var(--text-secondary);
     }
 
     .status-container.error {
-      display: flex;
       background-color: var(--red-bg);
       border: 1px solid var(--red-border);
       color: var(--red-text);
@@ -1584,6 +1582,8 @@
 
         resultWrap.style.display = "flex";
         loader.style.display = "none";
+        errorMsg.style.display = "none";
+        errorMsg.querySelector("span").textContent = "";
         
         // Save to activity history
         saveToHistory("outline", data.title || fileInput.files[0].name, data);
@@ -1693,6 +1693,8 @@
 
         resultWrap.style.display = "flex";
         loader.style.display = "none";
+        errorMsg.style.display = "none";
+        errorMsg.querySelector("span").textContent = "";
 
         // Save history (use first document name or query as key name)
         const historyTitle = `Query for "${personaInput.value.trim()}"`;
@@ -1790,6 +1792,8 @@
 
         resultWrap.style.display = "flex";
         loader.style.display = "none";
+        errorMsg.style.display = "none";
+        errorMsg.querySelector("span").textContent = "";
 
         // Save history
         saveToHistory("resumefit", `Fit for ${fileInput.files[0].name}`, data);
@@ -1877,6 +1881,9 @@
         treeContainer.innerHTML = "";
         renderOutlineNodes(treeContainer, item.payload.outline);
         resultWrap.style.display = "flex";
+        document.getElementById("status-outline-loading").style.display = "none";
+        document.getElementById("status-outline-error").style.display = "none";
+        document.getElementById("status-outline-error").querySelector("span").textContent = "";
         
         showFeedbackWidget(item.payload.analysis_id || 1, "results-outline");
       } 
@@ -1920,6 +1927,9 @@
         }
 
         resultWrap.style.display = "flex";
+        document.getElementById("status-persona-loading").style.display = "none";
+        document.getElementById("status-persona-error").style.display = "none";
+        document.getElementById("status-persona-error").querySelector("span").textContent = "";
         showFeedbackWidget(item.payload.analysis_id || 1, "results-persona");
       } 
       else if (item.workflow === "resumefit") {
@@ -1980,6 +1990,9 @@
         }
 
         resultWrap.style.display = "flex";
+        document.getElementById("status-resume-loading").style.display = "none";
+        document.getElementById("status-resume-error").style.display = "none";
+        document.getElementById("status-resume-error").querySelector("span").textContent = "";
         showFeedbackWidget(item.payload.analysis_id || 1, "results-resume");
       }
     }
