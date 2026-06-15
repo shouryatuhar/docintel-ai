@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import shutil
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -70,17 +71,30 @@ async def serve_frontend() -> FileResponse:
 @app.post("/api/outline")
 async def outline(file: UploadFile = File(...)) -> dict:
     """Extract a title and heading outline from one PDF."""
+    start_time = time.perf_counter()
+    size_bytes = 0
     with TemporaryDirectory() as temp_dir:
         filename, pdf_path = _save_upload(file, Path(temp_dir))
         try:
+            size_bytes = pdf_path.stat().st_size
             res = extract_outline(pdf_path)
+            duration_ms = int((time.perf_counter() - start_time) * 1000)
             event_id = log_event(
                 workflow="outline",
-                details={"filename": filename}
+                size_bytes=size_bytes,
+                duration_ms=duration_ms,
+                success=True
             )
             res["analysis_id"] = event_id
             return res
         except Exception as exc:  # noqa: BLE001
+            duration_ms = int((time.perf_counter() - start_time) * 1000)
+            log_event(
+                workflow="outline",
+                size_bytes=size_bytes,
+                duration_ms=duration_ms,
+                success=False
+            )
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
@@ -95,40 +109,54 @@ async def persona(
     if not files:
         raise HTTPException(status_code=400, detail="At least one PDF is required")
 
+    start_time = time.perf_counter()
+    total_size_bytes = 0
     with TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
         all_sections: list[dict] = []
         input_documents: list[str] = []
 
-        for upload in files:
-            document_name, pdf_path = _save_upload(upload, temp_path)
-            try:
-                sections = split_sections(document_name, pdf_path)
-            except Exception as exc:  # noqa: BLE001
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"Failed to process {document_name}: {exc}",
-                ) from exc
+        try:
+            for upload in files:
+                document_name, pdf_path = _save_upload(upload, temp_path)
+                total_size_bytes += pdf_path.stat().st_size
+                try:
+                    sections = split_sections(document_name, pdf_path)
+                except Exception as exc:  # noqa: BLE001
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"Failed to process {document_name}: {exc}",
+                    ) from exc
 
-            all_sections.extend(sections)
-            input_documents.append(document_name)
+                all_sections.extend(sections)
+                input_documents.append(document_name)
 
-        if not all_sections:
-            raise HTTPException(status_code=400, detail="No sections extracted from PDFs")
+            if not all_sections:
+                raise HTTPException(status_code=400, detail="No sections extracted from PDFs")
 
-        ranked = rank_sections(all_sections, persona, job)
-        timestamp = datetime.now(timezone.utc).isoformat()
-        res = build_output_json(input_documents, persona, job, ranked, timestamp)
-        event_id = log_event(
-            workflow="persona",
-            details={
-                "filenames": input_documents,
-                "persona": persona,
-                "job": job
-            }
-        )
-        res["analysis_id"] = event_id
-        return res
+            ranked = rank_sections(all_sections, persona, job)
+            timestamp = datetime.now(timezone.utc).isoformat()
+            res = build_output_json(input_documents, persona, job, ranked, timestamp)
+            duration_ms = int((time.perf_counter() - start_time) * 1000)
+            event_id = log_event(
+                workflow="persona",
+                size_bytes=total_size_bytes,
+                duration_ms=duration_ms,
+                success=True
+            )
+            res["analysis_id"] = event_id
+            return res
+        except Exception as exc:  # noqa: BLE001
+            duration_ms = int((time.perf_counter() - start_time) * 1000)
+            log_event(
+                workflow="persona",
+                size_bytes=total_size_bytes,
+                duration_ms=duration_ms,
+                success=False
+            )
+            if isinstance(exc, HTTPException):
+                raise exc
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @app.post("/resume-fit")
@@ -138,23 +166,30 @@ async def resume_fit(
     job_description: str = Form(...),
 ) -> dict:
     """Check how well a resume matches a job description."""
+    start_time = time.perf_counter()
+    size_bytes = 0
     with TemporaryDirectory() as temp_dir:
         resume_name, pdf_path = _save_upload(resume, Path(temp_dir))
         try:
+            size_bytes = pdf_path.stat().st_size
             result = analyze_resume_fit(resume_name, pdf_path, job_description)
+            duration_ms = int((time.perf_counter() - start_time) * 1000)
             event_id = log_event(
                 workflow="resume-fit",
-                details={
-                    "filename": resume_name,
-                    "match_category": result["match_category"],
-                    "match_score": result["match_score"],
-                    "matched_count": len(result["matched_keywords"]),
-                    "missing_count": len(result["missing_keywords"])
-                }
+                size_bytes=size_bytes,
+                duration_ms=duration_ms,
+                success=True
             )
             result["analysis_id"] = event_id
             return result
         except Exception as exc:  # noqa: BLE001
+            duration_ms = int((time.perf_counter() - start_time) * 1000)
+            log_event(
+                workflow="resume-fit",
+                size_bytes=size_bytes,
+                duration_ms=duration_ms,
+                success=False
+            )
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 

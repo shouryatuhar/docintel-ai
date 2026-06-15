@@ -1,0 +1,220 @@
+=== DIAGNOSING CSET333_Syllabus.pdf ===
+
+--- 1. Raw Text Extracted from Page 1 (first 1500 chars) ---
+Name of Program 
+CSET333 
+Owning School/Department 
+Pre-requisites/Exposure 
+Bachelor of Technology (Computer Science Engineering) 
+Problem Solving using C 
+School  of  Computer  Science  Engineering  and 
+Technology 
+- 
+L  T   P   C 
+2  0  2  3 
+Course Outcomes (COs) 
+On completion of this course, the students will be able to: 
+CO1: To explain various concepts in C programming language and understand the problem-solving 
+aspect. 
+CO2: To Implement concept of pointer and perform I/O operations in files and make use of concepts 
+in finding solutions to real-life problems. 
+CO-PO/PSO Mapping 
+PO1  PO2  PO3  PO4  PO5  PO6  PO7  PO8  PO9  PO10  PO11  PO12  PSO1  PSO2  PSO3 
+CO1  3 
+CO2  2 
+3 
+2 
+3 
+2 
+2 
+1 
+2 
+2 
+1 
+1 
+2 
+1 
+2 
+1 
+1 
+2 
+2 
+1 
+2 
+2 
+3 
+1 
+1 
+1=weakly related           2= moderately related            3=strongly related 
+Course Contents: 
+Module I: 
+        8 lecture hours 
+Program  structure,  Communications  with  the  Operating  System,  Library  Functions,  Pre-processor 
+Directives, Debugging and Efficiency, Memory Models, Data Types-Simple C data types, Integer Data 
+types, Floating Point types, Derived Data types, The ASCII Character Set, Compilation and Linking, 
+Types  of  compilers,  Decision  making,  Loops,  Switch  statement,  Goto  statement,  Null  statement, 
+Comma operator, setjmp functions, longjmp functions, Storage classes: automatic variable, external, 
+static, register, Arrays, Array Indexing, Using Array names as Pointers, Character Arrays. 
+
+------------------------------------------------------------
+
+--- 2. Font sizes and names detected (Top 30) ---
+Font: BCDHEE+TimesNewRomanPSMT, Size: 11.0 -> Count: 2762
+Font: BCDEEE+TimesNewRomanPS-BoldMT, Size: 11.0 -> Count: 587
+Font: BCDEEE+TimesNewRomanPS-BoldMT, Size: 10.0 -> Count: 74
+Font: BCDHEE+TimesNewRomanPSMT, Size: 10.0 -> Count: 50
+Font: BCDNEE+TimesNewRomanPS-ItalicMT, Size: 11.0 -> Count: 48
+Font: BCDHEE+TimesNewRomanPSMT, Size: 7.0 -> Count: 4
+Font: BCDLEE+ArialMT, Size: 11.0 -> Count: 2
+------------------------------------------------------------
+
+Derived Thresholds:
+H1: 11.0
+H2: 11.0
+H3: 10.0
+------------------------------------------------------------
+
+--- 3. Candidate Headings (All raw candidates before merge) ---
+0: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Name of Program'
+1: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'CSET333'
+2: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Owning School/Department'
+3: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Pre-requisites/Exposure'
+4: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Bachelor of Technology (Computer Science Engineering)'
+5: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Problem Solving using C'
+6: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'School of Computer Science Engineering and'
+7: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Technology'
+8: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'L T P C'
+9: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Course Outcomes (COs)'
+10: Page 1, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'On completion of this course, the students will be able to:'
+11: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'CO1: To explain various concepts in C programming language and understand the problem-solving'
+12: Page 1, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'aspect.'
+13: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'CO2: To Implement concept of pointer and perform I/O operations in files and make use of concepts'
+14: Page 1, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'in finding solutions to real-life problems.'
+15: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'CO-PO/PSO Mapping'
+16: Page 1, Level: H3, Size: 10.0, Bold: True, Score: 2, Text: 'PO1 PO2 PO3 PO4 PO5 PO6 PO7 PO8 PO9 PO10 PO11 PO12 PSO1 PSO2 PSO3'
+17: Page 1, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: '1=weakly related 2= moderately related 3=strongly related'
+18: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Course Contents:'
+19: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Module I:'
+20: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: '8 lecture hours'
+21: Page 1, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'Program structure, Communications with the Operating System, Library Functions, Pre-processor'
+22: Page 1, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'Directives, Debugging and Efficiency, Memory Models, Data Types-Simple C data types, Integer Data'
+23: Page 1, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'types, Floating Point types, Derived Data types, The ASCII Character Set, Compilation and Linking,'
+24: Page 1, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'Types of compilers, Decision making, Loops, Switch statement, Goto statement, Null statement,'
+25: Page 1, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'Comma operator, setjmp functions, longjmp functions, Storage classes: automatic variable, external,'
+26: Page 1, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'static, register, Arrays, Array Indexing, Using Array names as Pointers, Character Arrays.'
+27: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Modulo II:'
+28: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: '10 lecture hours'
+29: Page 1, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'Advanced data types: #define statement, Variable length array, Flexible array members, Complex'
+30: Page 1, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'number type, Type Qualifiers: Const, Volatile, Restrict, Functions, Pass by value, Pass by reference,'
+31: Page 1, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'Command Line Arguments, Structures, Arrays of Structures, Structures of Arrays, Structures of'
+32: Page 1, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'Structures, Bit Fields in Structures, offsetof(), Macro, unions, Typedef, Typecasting, Implicit type'
+33: Page 1, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'casting, Explicit typecasting, Pointers- Declaration, NULL pointers, Indirection, Pointer to array,'
+34: Page 1, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'Pointer to function, Pointer to structure, Arrays of Pointers, Passing pointers to functions.'
+35: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Module III:'
+36: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: '10 lecture hours'
+37: Page 1, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'File handling, Recursive functions, Memory allocation in a recursive method, Dynamic memory'
+38: Page 1, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'allocation, Global Memory versus Local Memory, Error handling in C, Global Variable Errno, perror()'
+39: Page 1, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'and strerror(), Exit status, Divide by zero errors, Interfacing C with Python code: Calling C functions'
+40: Page 1, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'from Python, Calling python functions from C, Threads: Creating a thread, Passing arguments and'
+41: Page 2, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'returning values, Common thread functions, Thread synchronization concepts, Mutexes, condition'
+42: Page 2, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'variables.'
+43: Page 2, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Module IV:'
+44: Page 2, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: '13 lecture hours'
+45: Page 2, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'Generic Security Software's, Windows Firewalls, Linux Firewalls, Access Control Lists of Firewalls,'
+46: Page 2, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'Types and Examples of Firewalls, Network-based Honeypots and Trapdoors, Virtual Private Network'
+47: Page 2, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'and its Implementation, Network Intrusion Detection System, Network Intrusion Prevention System,'
+48: Page 2, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'Router Security, Switch Security, Proxy Server and its Configurations, Load Balancers, IPv6 and IPv6'
+49: Page 2, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'Security, Secure Forwarding in Overlay Networks.'
+50: Page 2, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Studio Work / Laboratory Experiments:'
+51: Page 2, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'Students will implement the following programs in C language on a Linux based platform using GCC'
+52: Page 2, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: 'compiler.'
+53: Page 2, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Text Books :'
+54: Page 2, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: '1. Gottfried Byron, Outline of Programming with C (4th ed.), McGraw Hill Education, 2018. ISBN'
+55: Page 2, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Reference Books :'
+56: Page 2, Level: H1, Size: 11.0, Bold: False, Score: 1, Text: '1. Balaguruswamy E., Programming in ANSI (8th ed.), McGraw Hill Education, 2018. ISBN 978-'
+57: Page 2, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Assessment Scheme:'
+58: Page 2, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Components'
+59: Page 2, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Internal Assessment'
+60: Page 2, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Mid Term Exam'
+61: Page 2, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'End Exam'
+62: Page 2, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Total'
+63: Page 2, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Weightage (%)'
+------------------------------------------------------------
+
+--- 4. Qualified Headings (score >= MIN_HEADING_SCORE) ---
+0: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Name of Program'
+1: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'CSET333'
+2: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Owning School/Department'
+3: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Pre-requisites/Exposure'
+4: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Bachelor of Technology (Computer Science Engineering)'
+5: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Problem Solving using C'
+6: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'School of Computer Science Engineering and'
+7: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Technology'
+8: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'L T P C'
+9: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Course Outcomes (COs)'
+10: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'CO1: To explain various concepts in C programming language and understand the problem-solving'
+11: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'CO2: To Implement concept of pointer and perform I/O operations in files and make use of concepts'
+12: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'CO-PO/PSO Mapping'
+13: Page 1, Level: H3, Size: 10.0, Bold: True, Score: 2, Text: 'PO1 PO2 PO3 PO4 PO5 PO6 PO7 PO8 PO9 PO10 PO11 PO12 PSO1 PSO2 PSO3'
+14: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Course Contents:'
+15: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Module I:'
+16: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: '8 lecture hours'
+17: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Modulo II:'
+18: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: '10 lecture hours'
+19: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Module III:'
+20: Page 1, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: '10 lecture hours'
+21: Page 2, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Module IV:'
+22: Page 2, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: '13 lecture hours'
+23: Page 2, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Studio Work / Laboratory Experiments:'
+24: Page 2, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Text Books :'
+25: Page 2, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Reference Books :'
+26: Page 2, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Assessment Scheme:'
+27: Page 2, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Components'
+28: Page 2, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Internal Assessment'
+29: Page 2, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Mid Term Exam'
+30: Page 2, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'End Exam'
+31: Page 2, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Total'
+32: Page 2, Level: H1, Size: 11.0, Bold: True, Score: 2, Text: 'Weightage (%)'
+------------------------------------------------------------
+
+--- 5. Merged Headings ---
+0: Page 1, Level: H1, Text: 'Name of Program'
+1: Page 1, Level: H1, Text: 'CSET333'
+2: Page 1, Level: H1, Text: 'Owning School/Department'
+3: Page 1, Level: H1, Text: 'Pre-requisites/Exposure'
+4: Page 1, Level: H1, Text: 'Bachelor of Technology (Computer Science Engineering)'
+5: Page 1, Level: H1, Text: 'Problem Solving using C'
+6: Page 1, Level: H1, Text: 'School of Computer Science Engineering and'
+7: Page 1, Level: H1, Text: 'Technology'
+8: Page 1, Level: H1, Text: 'L T P C'
+9: Page 1, Level: H1, Text: 'Course Outcomes (COs)'
+10: Page 1, Level: H1, Text: 'CO1: To explain various concepts in C programming language and understand the problem-solving'
+11: Page 1, Level: H1, Text: 'CO2: To Implement concept of pointer and perform I/O operations in files and make use of concepts'
+12: Page 1, Level: H1, Text: 'CO-PO/PSO Mapping'
+13: Page 1, Level: H3, Text: 'PO1 PO2 PO3 PO4 PO5 PO6 PO7 PO8 PO9 PO10 PO11 PO12 PSO1 PSO2 PSO3'
+14: Page 1, Level: H1, Text: 'Course Contents:'
+15: Page 1, Level: H1, Text: 'Module I:'
+16: Page 1, Level: H1, Text: '8 lecture hours'
+17: Page 1, Level: H1, Text: 'Modulo II:'
+18: Page 1, Level: H1, Text: '10 lecture hours'
+19: Page 1, Level: H1, Text: 'Module III:'
+20: Page 1, Level: H1, Text: '10 lecture hours'
+21: Page 2, Level: H1, Text: 'Module IV:'
+22: Page 2, Level: H1, Text: '13 lecture hours'
+23: Page 2, Level: H1, Text: 'Studio Work / Laboratory Experiments:'
+24: Page 2, Level: H1, Text: 'Text Books :'
+25: Page 2, Level: H1, Text: 'Reference Books :'
+26: Page 2, Level: H1, Text: 'Assessment Scheme:'
+27: Page 2, Level: H1, Text: 'Components'
+28: Page 2, Level: H1, Text: 'Internal Assessment'
+29: Page 2, Level: H1, Text: 'Mid Term Exam'
+30: Page 2, Level: H1, Text: 'End Exam'
+31: Page 2, Level: H1, Text: 'Total'
+32: Page 2, Level: H1, Text: 'Weightage (%)'
+------------------------------------------------------------
+
+--- Title Selection Logic ---
+First H1 on Page 1: 'Name of Program'
+First merged heading overall: 'Name of Program'
+Selected Title: 'Name of Program'
+------------------------------------------------------------

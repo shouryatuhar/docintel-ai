@@ -94,10 +94,26 @@ def init_db() -> None:
         conn.close()
 
 
-def log_event(workflow: str, details: dict[str, Any]) -> int:
-    """Log an analysis event to the active database (Redis or SQLite) and increment metrics."""
+def get_size_bucket(size_bytes: int) -> str:
+    """Classify file size in bytes to a generic category bucket."""
+    if size_bytes < 512000:
+        return "small"
+    elif size_bytes < 2048000:
+        return "medium"
+    return "large"
+
+
+def log_event(workflow: str, size_bytes: int, duration_ms: int, success: bool) -> int:
+    """Log an anonymous analysis event to the active database and increment metrics."""
     today_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     timestamp_str = datetime.now(timezone.utc).isoformat()
+    bucket = get_size_bucket(size_bytes)
+    
+    details = {
+        "document_size_bucket": bucket,
+        "processing_duration_ms": duration_ms,
+        "success": success
+    }
 
     if _is_redis_enabled():
         try:
