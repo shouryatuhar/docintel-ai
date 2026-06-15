@@ -1607,7 +1607,7 @@
         nodeEl.innerHTML = `
           <div class="outline-header" ${hasChildren ? 'onclick="toggleOutline(this)"' : ''}>
             <span class="outline-chevron" style="visibility: ${hasChildren ? 'visible' : 'hidden'}">▸</span>
-            <span class="outline-node-text">${escapeHtml(node.heading)}</span>
+            <span class="outline-node-text">${escapeHtml(node.text)}</span>
             <span class="outline-node-page">Page ${node.page}</span>
           </div>
         `;
