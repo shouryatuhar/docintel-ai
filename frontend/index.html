@@ -3,323 +3,2188 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DocIntel AI</title>
+  <title>DocIntel AI — Find what matters instantly</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
   <style>
     :root {
-      color-scheme: dark;
-      --bg: #0b1020;
-      --bg-accent: #131b33;
-      --panel: rgba(15, 23, 42, 0.88);
-      --panel-border: rgba(148, 163, 184, 0.18);
-      --text: #e5eefb;
-      --muted: #94a3b8;
-      --accent: #38bdf8;
-      --accent-strong: #22d3ee;
-      --danger: #fb7185;
-      --shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+      --bg-sidebar: #f7f7f5;
+      --bg-main: #ffffff;
+      --border-color: #ededeb;
+      --text-primary: #37352f;
+      --text-secondary: #6b6a65;
+      --text-muted: #acaba9;
+      --accent-color: #2383e2;
+      --accent-light: rgba(35, 131, 226, 0.08);
+      --accent-hover: #1b66b1;
+      
+      --green-bg: #e2f6ec;
+      --green-text: #0f7b4b;
+      --green-border: #c4ebd7;
+      
+      --orange-bg: #fdf3e7;
+      --orange-text: #c26100;
+      --orange-border: #fadcb9;
+      
+      --red-bg: #fbe9eb;
+      --red-text: #d1243b;
+      --red-border: #f7cacf;
+      
+      --card-bg: #ffffff;
+      --card-shadow: 0 1px 3px rgba(15, 15, 15, 0.05), 0 0 0 1px rgba(15, 15, 15, 0.05);
+      --card-hover-shadow: 0 4px 12px rgba(15, 15, 15, 0.08), 0 0 0 1px rgba(15, 15, 15, 0.06);
+      
+      --transition-speed: 0.2s;
+      --sidebar-width: 260px;
+    }
+
+    /* Dark Mode variables */
+    body.dark-theme {
+      --bg-sidebar: #0f0f0f;
+      --bg-main: #191919;
+      --border-color: #2c2c2c;
+      --text-primary: #f1f1f0;
+      --text-secondary: #9b9b9b;
+      --text-muted: #5a5a5a;
+      --accent-color: #2eaadc;
+      --accent-light: rgba(46, 170, 220, 0.15);
+      --accent-hover: #5ec0e7;
+      
+      --green-bg: #1c3329;
+      --green-text: #4ade80;
+      --green-border: #244b39;
+      
+      --orange-bg: #3b2e1f;
+      --orange-text: #fbbf24;
+      --orange-border: #57442d;
+      
+      --red-bg: #381e22;
+      --red-text: #f87171;
+      --red-border: #52272c;
+      
+      --card-bg: #222222;
+      --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.03);
+      --card-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.06);
     }
 
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-primary);
       min-height: 100vh;
-      font-family: "SF Mono", "Menlo", "Monaco", monospace;
-      background:
-        radial-gradient(circle at top, rgba(56, 189, 248, 0.14), transparent 30%),
-        linear-gradient(180deg, #050816 0%, var(--bg) 100%);
-      color: var(--text);
+      display: flex;
+      overflow-x: hidden;
+      transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+    }
+
+    /* Sidebar Layout */
+    aside {
+      width: var(--sidebar-width);
+      background-color: var(--bg-sidebar);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 100;
+      transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+    }
+
+    .sidebar-header {
+      padding: 24px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-icon {
+      color: var(--accent-color);
+      width: 20px;
+      height: 20px;
+    }
+
+    .theme-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-secondary);
+      padding: 6px;
+      border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      transition: background var(--transition-speed) ease;
     }
 
-    .shell {
-      width: min(980px, 100%);
-      background: var(--panel);
-      border: 1px solid var(--panel-border);
-      border-radius: 24px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      backdrop-filter: blur(14px);
+    .theme-toggle:hover {
+      background-color: var(--border-color);
     }
 
-    .hero {
-      padding: 28px 28px 18px;
-      border-bottom: 1px solid var(--panel-border);
-      background: linear-gradient(180deg, rgba(19, 27, 51, 0.96), rgba(11, 16, 32, 0.72));
-    }
-
-    h1 {
-      margin: 0 0 8px;
-      font-size: clamp(1.75rem, 4vw, 2.5rem);
-      letter-spacing: -0.04em;
-    }
-
-    .subtitle {
-      margin: 0;
-      color: var(--muted);
-      max-width: 62ch;
-      line-height: 1.6;
-    }
-
-    .tabs {
+    .sidebar-nav {
+      flex: 1;
+      padding: 16px 12px;
       display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-button {
+      display: flex;
+      align-items: center;
       gap: 10px;
-      padding: 18px 28px 0;
-      flex-wrap: wrap;
-    }
-
-    .tab-button {
-      border: 1px solid var(--panel-border);
-      background: rgba(15, 23, 42, 0.8);
-      color: var(--muted);
-      border-radius: 999px;
-      padding: 10px 16px;
+      width: 100%;
+      border: none;
+      background: none;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 10px 12px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: 160ms ease;
+      text-align: left;
+      transition: all var(--transition-speed) ease;
     }
 
-    .tab-button.active {
-      color: #04111d;
-      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-      border-color: transparent;
+    .nav-button:hover {
+      background-color: var(--border-color);
+      color: var(--text-primary);
     }
 
-    .content {
-      display: grid;
-      gap: 20px;
-      padding: 24px 28px 28px;
+    .nav-button.active {
+      background-color: var(--accent-light);
+      color: var(--accent-color);
+    }
+
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border-color);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Main Content Area */
+    main {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      padding: 60px 80px;
+      max-width: 1000px;
+      min-width: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: margin var(--transition-speed) ease;
+    }
+
+    /* Mobile Header toggler */
+    .mobile-header {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      background-color: var(--bg-main);
+      border-bottom: 1px solid var(--border-color);
+      z-index: 90;
+      align-items: center;
+      padding: 0 16px;
+      justify-content: space-between;
+    }
+
+    .menu-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-primary);
+    }
+
+    /* Typography and Layout elements */
+    h1.page-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      margin-bottom: 40px;
+      line-height: 1.5;
     }
 
     .panel {
       display: none;
-      gap: 18px;
+      flex-direction: column;
+      gap: 28px;
     }
 
     .panel.active {
-      display: grid;
+      display: flex;
+    }
+
+    /* Form Layouts */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .form-description {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-top: -4px;
+    }
+
+    /* Inputs */
+    textarea {
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      padding: 12px 16px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      line-height: 1.5;
+      resize: vertical;
+      min-height: 120px;
+      outline: none;
+      transition: border-color var(--transition-speed) ease;
+    }
+
+    textarea:focus {
+      border-color: var(--accent-color);
+    }
+
+    input[type="text"] {
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      padding: 10px 16px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color var(--transition-speed) ease;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent-color);
+    }
+
+    /* Custom File Drop Zone */
+    .drop-zone {
+      border: 2px dashed var(--border-color);
+      border-radius: 12px;
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      background-color: var(--bg-sidebar);
+      transition: all var(--transition-speed) ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .drop-zone:hover, .drop-zone.dragover {
+      border-color: var(--accent-color);
+      background-color: var(--accent-light);
+    }
+
+    .drop-zone-prompt {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-secondary);
+    }
+
+    .drop-zone-icon {
+      width: 36px;
+      height: 36px;
+      color: var(--accent-color);
+    }
+
+    .drop-zone-prompt span {
+      font-size: 0.9rem;
+    }
+
+    .drop-zone-prompt strong {
+      color: var(--accent-color);
+    }
+
+    .drop-zone-prompt .file-format-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .drop-zone-input {
+      display: none;
+    }
+
+    .selected-file-info {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .selected-file-info svg {
+      width: 20px;
+      height: 20px;
+      color: var(--green-text);
+    }
+
+    .clear-file-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.8rem;
+      text-decoration: underline;
+    }
+
+    .clear-file-btn:hover {
+      color: var(--red-text);
+    }
+
+    /* Buttons */
+    .btn-submit {
+      align-self: flex-start;
+      border: none;
+      background-color: var(--accent-color);
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background var(--transition-speed) ease;
+    }
+
+    .btn-submit:hover {
+      background-color: var(--accent-hover);
+    }
+
+    .btn-submit:disabled {
+      background-color: var(--border-color);
+      color: var(--text-muted);
+      cursor: not-allowed;
+    }
+
+    /* Status Notifications */
+    .status-container {
+      display: none;
+      padding: 14px 18px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      align-items: flex-start;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .status-container.loading {
+      display: flex;
+      background-color: var(--bg-sidebar);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+    }
+
+    .status-container.error {
+      display: flex;
+      background-color: var(--red-bg);
+      border: 1px solid var(--red-border);
+      color: var(--red-text);
+    }
+
+    .spinner {
+      border: 2px solid rgba(0, 0, 0, 0.1);
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border-left-color: var(--accent-color);
+      animation: spin 0.8s linear infinite;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    body.dark-theme .spinner {
+      border-color: rgba(255, 255, 255, 0.1);
+      border-left-color: var(--accent-color);
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Results Header / Divider */
+    .results-wrapper {
+      margin-top: 32px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 32px;
+      display: none;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .results-header-section {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .results-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    /* Flow 1: Outline Tree Styles */
+    .document-title-banner {
+      background-color: var(--bg-sidebar);
+      border: 1px solid var(--border-color);
+      padding: 16px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1.05rem;
+    }
+
+    .outline-tree {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .outline-node {
+      display: flex;
+      flex-direction: column;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .outline-header {
+      display: flex;
+      align-items: center;
+      padding: 10px 14px;
+      background-color: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      cursor: pointer;
+      user-select: none;
+      transition: background var(--transition-speed) ease;
+    }
+
+    .outline-header:hover {
+      background-color: var(--bg-sidebar);
+    }
+
+    .outline-chevron {
+      color: var(--text-muted);
+      margin-right: 10px;
+      font-size: 0.8rem;
+      transition: transform var(--transition-speed) ease;
+      width: 14px;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .outline-chevron.expanded {
+      transform: rotate(90deg);
+    }
+
+    .outline-node-text {
+      flex: 1;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .outline-node-page {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .outline-children {
+      display: none;
+      padding-left: 24px;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .outline-children.expanded {
+      display: flex;
+    }
+
+    /* Flow 2: Finder Cards */
+    .badge {
+      display: inline-flex;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .badge-primary {
+      background-color: var(--green-bg);
+      color: var(--green-text);
+      border: 1px solid var(--green-border);
+    }
+
+    .badge-secondary {
+      background-color: var(--accent-light);
+      color: var(--accent-color);
+      border: 1px solid var(--border-color);
+    }
+
+    .finder-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .finder-section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
     }
 
     .card {
-      background: rgba(2, 6, 23, 0.58);
-      border: 1px solid var(--panel-border);
-      border-radius: 18px;
-      padding: 18px;
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: var(--card-shadow);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
     }
 
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 0.92rem;
-      color: var(--muted);
+    .card:hover {
+      box-shadow: var(--card-hover-shadow);
+      transform: translateY(-1px);
     }
 
-    input[type="text"],
-    textarea,
-    input[type="file"] {
-      width: 100%;
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .card-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .card-content {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Flow 3: Resume Checker Elements */
+    .match-status-hero {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background-color: var(--bg-sidebar);
+      border: 1px solid var(--border-color);
       border-radius: 12px;
-      border: 1px solid rgba(148, 163, 184, 0.16);
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text);
-      padding: 12px 14px;
-      font: inherit;
+      padding: 24px;
     }
 
-    textarea {
-      min-height: 110px;
-      resize: vertical;
-    }
-
-    button.submit {
-      border: 0;
-      border-radius: 12px;
-      padding: 12px 16px;
-      background: linear-gradient(135deg, #0ea5e9, #22d3ee);
-      color: #03131f;
-      font: inherit;
+    .match-badge-large {
+      display: inline-flex;
+      align-self: flex-start;
+      padding: 6px 16px;
+      border-radius: 999px;
       font-weight: 700;
-      cursor: pointer;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
-    .status {
-      min-height: 1.25rem;
-      color: var(--muted);
-      font-size: 0.92rem;
+    .match-badge-large.strong {
+      background-color: var(--green-bg);
+      color: var(--green-text);
+      border: 1px solid var(--green-border);
     }
 
-    .status.error {
-      color: var(--danger);
+    .match-badge-large.moderate {
+      background-color: var(--orange-bg);
+      color: var(--orange-text);
+      border: 1px solid var(--orange-border);
     }
 
-    pre {
-      margin: 0;
-      white-space: pre-wrap;
-      word-break: break-word;
-      background: #020617;
-      border-radius: 16px;
-      border: 1px solid rgba(148, 163, 184, 0.14);
-      padding: 18px;
-      min-height: 260px;
-      overflow: auto;
+    .match-badge-large.weak {
+      background-color: var(--red-bg);
+      color: var(--red-text);
+      border: 1px solid var(--red-border);
+    }
+
+    .match-explanation {
+      font-size: 0.95rem;
       line-height: 1.6;
+      color: var(--text-primary);
+    }
+
+    .pills-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
     }
 
     @media (max-width: 640px) {
-      body {
-        padding: 14px;
+      .pills-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .pills-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .pills-card-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .pills-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill {
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+    }
+
+    .pill-green {
+      background-color: var(--green-bg);
+      color: var(--green-text);
+      border-color: var(--green-border);
+    }
+
+    .pill-orange {
+      background-color: var(--orange-bg);
+      color: var(--orange-text);
+      border-color: var(--orange-border);
+    }
+
+    .pill-empty {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-style: italic;
+    }
+
+    /* Feedback Box */
+    .feedback-box {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      background-color: var(--bg-sidebar);
+      margin-top: 12px;
+    }
+
+    .feedback-question {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .feedback-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .feedback-btn {
+      background-color: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all var(--transition-speed) ease;
+    }
+
+    .feedback-btn:hover {
+      background-color: var(--border-color);
+      transform: translateY(-1px);
+    }
+
+    .feedback-thanks {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      color: var(--green-text);
+      font-size: 0.88rem;
+      font-weight: 500;
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Flow 4: History log styles */
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all var(--transition-speed) ease;
+    }
+
+    .history-item:hover {
+      border-color: var(--accent-color);
+      background-color: var(--bg-sidebar);
+    }
+
+    .history-item-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .history-item-icon {
+      color: var(--accent-color);
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+    }
+
+    .history-item-details {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .history-item-title {
+      font-weight: 500;
+      font-size: 0.92rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .history-item-meta {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .history-item-time {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .history-empty {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+      font-style: italic;
+      font-size: 0.9rem;
+    }
+
+
+    /* Stats & Dashboard Styles */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 640px) {
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .metric-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--card-shadow);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      transition: all var(--transition-speed) ease;
+    }
+
+    .metric-card:hover {
+      box-shadow: var(--card-hover-shadow);
+    }
+
+    .metric-value {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--accent-color);
+      margin-bottom: 6px;
+    }
+
+    .metric-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .chart-container-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--card-shadow);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .chart-body {
+      position: relative;
+      width: 100%;
+      height: 240px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Workflow bars */
+    .workflow-distribution {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .workflow-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .workflow-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .workflow-bar-bg {
+      height: 8px;
+      background-color: var(--border-color);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .workflow-bar-fill {
+      height: 100%;
+      background-color: var(--accent-color);
+      border-radius: 999px;
+      width: 0%;
+      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Responsive overrides */
+    @media (max-width: 768px) {
+      aside {
+        transform: translateX(-100%);
       }
 
-      .hero,
-      .tabs,
-      .content {
-        padding-left: 18px;
-        padding-right: 18px;
+      aside.open {
+        transform: translateX(0);
+      }
+
+      main {
+        margin-left: 0;
+        padding: 80px 20px 40px;
+      }
+
+      .mobile-header {
+        display: flex;
       }
     }
   </style>
 </head>
 <body>
-  <main class="shell">
-    <section class="hero">
-      <h1>DocIntel AI</h1>
-      <p class="subtitle">Upload PDFs, extract clean heading outlines, or rank the most relevant sections for a persona and job-to-be-done.</p>
-    </section>
 
-    <nav class="tabs">
-      <button class="tab-button active" data-tab="outline">Outline Extractor</button>
-      <button class="tab-button" data-tab="persona">Persona Intelligence</button>
+  <!-- Mobile Top Bar -->
+  <header class="mobile-header">
+    <button class="menu-btn" id="sidebar-toggle-mobile">☰</button>
+    <div class="brand">
+      <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span>DocIntel AI</span>
+    </div>
+    <div style="width: 24px;"></div> <!-- Spacer -->
+  </header>
+
+  <!-- Left Sidebar Navigation -->
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span>DocIntel AI</span>
+      </div>
+      <button class="theme-toggle" id="theme-toggle-btn" title="Toggle theme">
+        <svg id="theme-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+      </button>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <button class="nav-button active" data-tab="outline">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Document Navigator
+      </button>
+      <button class="nav-button" data-tab="persona">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Information Finder
+      </button>
+      <button class="nav-button" data-tab="resumefit">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><path d="M12 11v6"/><path d="M9 14h6"/></svg>
+        Resume Matcher
+      </button>
+      <button class="nav-button" data-tab="stats">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="9" y2="17"/><line x1="15" y1="13" x2="15" y2="17"/><line x1="9" y1="9" x2="15" y2="13"/></svg>
+        Stats & Dashboard
+      </button>
+      <button class="nav-button" data-tab="history">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Recent Activity
+      </button>
     </nav>
+    
+    <div class="sidebar-footer">
+      <strong>DocIntel AI</strong><br>
+      Find the information that matters instantly.
+    </div>
+  </aside>
 
-    <section class="content">
-      <div id="outline" class="panel active">
-        <div class="card">
-          <label for="outline-file">PDF file</label>
-          <input id="outline-file" type="file" accept="application/pdf,.pdf">
+  <!-- Main View Container -->
+  <main>
+    
+    <!-- PANEL 1: DOCUMENT NAVIGATOR (OUTLINE) -->
+    <section id="panel-outline" class="panel active">
+      <h1 class="page-title">Document Navigator</h1>
+      <p class="page-subtitle">See the important parts of your document quickly by generating a collapsible table of contents.</p>
+      
+      <div class="form-group">
+        <label class="form-label">Upload your PDF document</label>
+        <div class="drop-zone" id="outline-drop-zone">
+          <div class="drop-zone-prompt">
+            <svg class="drop-zone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span>Drag your document here or <strong>browse files</strong></span>
+            <span class="file-format-hint">Supports PDF files</span>
+          </div>
+          <div class="selected-file-info">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span class="file-name-text">filename.pdf</span>
+            <button type="button" class="clear-file-btn">Clear</button>
+          </div>
+          <input type="file" id="outline-file-input" class="drop-zone-input" accept="application/pdf,.pdf">
         </div>
-        <div class="card">
-          <button id="outline-submit" class="submit">Extract Outline</button>
-          <p id="outline-status" class="status"></p>
-        </div>
-        <pre id="outline-result">{
-  "title": "",
-  "outline": []
-}</pre>
       </div>
 
-      <div id="persona" class="panel">
-        <div class="card">
-          <label for="persona-files">PDF files</label>
-          <input id="persona-files" type="file" accept="application/pdf,.pdf" multiple>
+      <button type="button" class="btn-submit" id="btn-outline-submit" disabled>See what's inside</button>
+
+      <div class="status-container loading" id="status-outline-loading">
+        <div class="spinner"></div>
+        <span>Analyzing document structure...</span>
+      </div>
+      <div class="status-container error" id="status-outline-error">
+        <span>An error occurred.</span>
+      </div>
+
+      <!-- Result View -->
+      <div class="results-wrapper" id="results-outline">
+        <div class="results-header-section">
+          <h2 class="results-title">Document Outline</h2>
         </div>
-        <div class="card">
-          <label for="persona-input">Persona</label>
-          <input id="persona-input" type="text" placeholder="Travel Planner">
-          <label for="job-input" style="margin-top: 14px;">Job to be done</label>
-          <textarea id="job-input" placeholder="Plan a 4-day trip for a family with children."></textarea>
+        <div class="document-title-banner" id="outline-doc-title">Document Title</div>
+        <div class="outline-tree" id="outline-tree-container">
+          <!-- Outline nodes appended here -->
         </div>
-        <div class="card">
-          <button id="persona-submit" class="submit">Rank Sections</button>
-          <p id="persona-status" class="status"></p>
-        </div>
-        <pre id="persona-result">{
-  "metadata": {},
-  "extracted_sections": [],
-  "subsection_analysis": []
-}</pre>
       </div>
     </section>
+
+    <!-- PANEL 2: INFORMATION FINDER (PERSONA/SEARCH) -->
+    <section id="panel-persona" class="panel">
+      <h1 class="page-title">Information Finder</h1>
+      <p class="page-subtitle">Instantly query a set of documents through a target viewpoint and find exactly the sections you need.</p>
+      
+      <div class="form-group">
+        <label class="form-label">Upload one or more documents</label>
+        <div class="drop-zone" id="persona-drop-zone">
+          <div class="drop-zone-prompt">
+            <svg class="drop-zone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span>Drag documents here or <strong>browse files</strong></span>
+            <span class="file-format-hint">Supports uploading multiple PDFs</span>
+          </div>
+          <div class="selected-file-info">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span class="file-name-text">3 files selected</span>
+            <button type="button" class="clear-file-btn">Clear</button>
+          </div>
+          <input type="file" id="persona-file-input" class="drop-zone-input" accept="application/pdf,.pdf" multiple>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="input-persona">Target viewpoint / Role</label>
+        <div class="form-description">Who is looking for this information? (e.g. Travel Planner, Auditor, Recruiting Manager)</div>
+        <input type="text" id="input-persona" placeholder="e.g. Travel Planner">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="input-job">What are you looking for?</label>
+        <div class="form-description">Describe the specific information you need to find.</div>
+        <textarea id="input-job" placeholder="e.g. Details about family activities, travel insurance, or hotel options."></textarea>
+      </div>
+
+      <button type="button" class="btn-submit" id="btn-persona-submit" disabled>Find what matters</button>
+
+      <div class="status-container loading" id="status-persona-loading">
+        <div class="spinner"></div>
+        <span>Searching documents for matching details...</span>
+      </div>
+      <div class="status-container error" id="status-persona-error">
+        <span>An error occurred.</span>
+      </div>
+
+      <!-- Result View -->
+      <div class="results-wrapper" id="results-persona">
+        <div class="results-header-section">
+          <h2 class="results-title">Relevant Information Found</h2>
+        </div>
+        
+        <div class="finder-section">
+          <div class="finder-section-title">Best Match</div>
+          <div id="persona-best-matches">
+            <!-- Best match cards -->
+          </div>
+        </div>
+
+        <div class="finder-section" style="margin-top: 16px;">
+          <div class="finder-section-title">Also Relevant</div>
+          <div id="persona-relevant-matches">
+            <!-- Also relevant cards -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 3: RESUME MATCHER -->
+    <section id="panel-resumefit" class="panel">
+      <h1 class="page-title">Resume Matcher</h1>
+      <p class="page-subtitle">Understand how your resume fits a specific position and highlight crucial skill gaps instantly.</p>
+      
+      <div class="form-group">
+        <label class="form-label">Upload your Resume (PDF)</label>
+        <div class="drop-zone" id="resume-drop-zone">
+          <div class="drop-zone-prompt">
+            <svg class="drop-zone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span>Drag your resume here or <strong>browse files</strong></span>
+            <span class="file-format-hint">Supports PDF files</span>
+          </div>
+          <div class="selected-file-info">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span class="file-name-text">resume.pdf</span>
+            <button type="button" class="clear-file-btn">Clear</button>
+          </div>
+          <input type="file" id="resume-file-input" class="drop-zone-input" accept="application/pdf,.pdf">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="input-job-description">Job Description</label>
+        <div class="form-description">Paste the description of the role you want to match against.</div>
+        <textarea id="input-job-description" placeholder="Paste the job description here..."></textarea>
+      </div>
+
+      <button type="button" class="btn-submit" id="btn-resume-submit" disabled>Check how your resume fits</button>
+
+      <div class="status-container loading" id="status-resume-loading">
+        <div class="spinner"></div>
+        <span>Comparing resume and requirements...</span>
+      </div>
+      <div class="status-container error" id="status-resume-error">
+        <span>An error occurred.</span>
+      </div>
+
+      <!-- Result View -->
+      <div class="results-wrapper" id="results-resume">
+        <div class="results-header-section">
+          <h2 class="results-title">Analysis Results</h2>
+        </div>
+        
+        <!-- Score Banner -->
+        <div class="match-status-hero">
+          <div class="match-badge-large" id="resume-match-badge">Strong Match</div>
+          <p class="match-explanation" id="resume-match-explanation">Why this matches paragraph.</p>
+        </div>
+
+        <!-- Pills Grid -->
+        <div class="pills-grid">
+          <div class="pills-card">
+            <div class="pills-card-title">Here's what's already working</div>
+            <div class="pills-list" id="resume-matched-pills">
+              <!-- green pills -->
+            </div>
+          </div>
+          <div class="pills-card">
+            <div class="pills-card-title">Here's what the role seeks that isn't mentioned</div>
+            <div class="pills-list" id="resume-missing-pills">
+              <!-- yellow pills -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Relevant Parts -->
+        <div class="finder-section">
+          <div class="finder-section-title">The parts of your resume that best match this role</div>
+          <div id="resume-matching-cards">
+            <!-- card elements -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 5: STATS & DASHBOARD -->
+    <section id="panel-stats" class="panel">
+      <h1 class="page-title">Stats & Dashboard</h1>
+      <p class="page-subtitle">Real-time usage analytics and engagement metrics from our document intelligence engine.</p>
+      
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-value" id="metric-docs">0</div>
+          <div class="metric-label">Documents analyzed</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="metric-resumes">0</div>
+          <div class="metric-label">Resume checks completed</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="metric-users">0</div>
+          <div class="metric-label">Users helped</div>
+        </div>
+      </div>
+
+      <div class="chart-container-card">
+        <div class="chart-header">
+          <h3 class="chart-title">Daily Analysis Activity (Last 30 Days)</h3>
+        </div>
+        <div class="chart-body" id="daily-chart-wrapper">
+          <!-- SVG line chart here -->
+        </div>
+      </div>
+
+      <div class="chart-container-card">
+        <div class="chart-header">
+          <h3 class="chart-title">Feature Distribution</h3>
+        </div>
+        <div class="workflow-distribution" id="workflow-dist-container">
+          <!-- workflow bars -->
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 4: RECENT ACTIVITY -->
+    <section id="panel-history" class="panel">
+      <h1 class="page-title">Recent Activity</h1>
+      <p class="page-subtitle">View and restore the results of your recent document analyses.</p>
+      
+      <div class="history-list" id="history-list-container">
+        <!-- List elements appended dynamically -->
+        <div class="history-empty">No recent activity found. Try running an analysis first!</div>
+      </div>
+    </section>
+
+    <!-- Feedback Container (Appended globally at the bottom of the active result) -->
+    <div class="feedback-box" id="feedback-widget">
+      <div class="feedback-question" id="feedback-prompt-text">Was this analysis helpful?</div>
+      <div class="feedback-actions" id="feedback-action-buttons">
+        <button class="feedback-btn" onclick="submitFeedback(1)">👍 Yes</button>
+        <button class="feedback-btn" onclick="submitFeedback(-1)">👎 No</button>
+      </div>
+      <div class="feedback-thanks" id="feedback-thanks-message">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" style="margin-top: 1px;"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>Thank you for your feedback!</span>
+      </div>
+    </div>
+
   </main>
 
   <script>
-    const tabs = document.querySelectorAll(".tab-button");
+    // Tab switching
+    const navButtons = document.querySelectorAll(".nav-button");
     const panels = document.querySelectorAll(".panel");
+    const sidebar = document.getElementById("sidebar");
+    const sidebarToggle = document.getElementById("sidebar-toggle-mobile");
+    let currentAnalysisId = null;
 
-    tabs.forEach((tab) => {
-      tab.addEventListener("click", () => {
-        tabs.forEach((button) => button.classList.remove("active"));
-        panels.forEach((panel) => panel.classList.remove("active"));
-        tab.classList.add("active");
-        document.getElementById(tab.dataset.tab).classList.add("active");
-      });
-    });
-
-    function setStatus(element, message, isError = false) {
-      element.textContent = message;
-      element.classList.toggle("error", isError);
+    // Load active tab from URL hash or default
+    function initTabs() {
+      let initialTab = window.location.hash.replace("#", "") || "outline";
+      if (!["outline", "persona", "resumefit", "history", "stats"].includes(initialTab)) {
+        initialTab = "outline";
+      }
+      switchTab(initialTab);
     }
 
-    async function postForm(url, formData) {
+    function switchTab(tabId) {
+      navButtons.forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.tab === tabId);
+      });
+      panels.forEach(panel => {
+        panel.classList.toggle("active", panel.id === `panel-${tabId}`);
+      });
+      window.location.hash = tabId;
+      sidebar.classList.remove("open");
+      
+      // Hide feedback widget when switching tabs unless a result is active
+      hideFeedbackWidget();
+      
+      // If history tab, refresh list
+      if (tabId === "history") {
+        renderHistory();
+      }
+      
+      // If stats tab, load metrics
+      if (tabId === "stats") {
+        loadMetrics();
+      }
+    }
+
+    navButtons.forEach(btn => {
+      btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+    });
+
+    sidebarToggle.addEventListener("click", () => {
+      sidebar.classList.toggle("open");
+    });
+
+    // Dark/Light Theme Toggle
+    const themeToggleBtn = document.getElementById("theme-toggle-btn");
+    const themeIcon = document.getElementById("theme-icon");
+    
+    // Load theme
+    const savedTheme = localStorage.getItem("docintel_theme") || "light";
+    if (savedTheme === "dark") {
+      document.body.classList.add("dark-theme");
+      updateThemeIcon(true);
+    }
+
+    themeToggleBtn.addEventListener("click", () => {
+      const isDark = document.body.classList.toggle("dark-theme");
+      localStorage.setItem("docintel_theme", isDark ? "dark" : "light");
+      updateThemeIcon(isDark);
+    });
+
+    function updateThemeIcon(isDark) {
+      if (isDark) {
+        themeIcon.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>`;
+      } else {
+        themeIcon.innerHTML = `<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>`;
+      }
+    }
+
+    // Drag and Drop File Handlers
+    function setupDragAndDrop(dropZoneId, fileInputId, btnSubmitId, onFileSelected) {
+      const dropZone = document.getElementById(dropZoneId);
+      const fileInput = document.getElementById(fileInputId);
+      const btnSubmit = document.getElementById(btnSubmitId);
+      const prompt = dropZone.querySelector(".drop-zone-prompt");
+      const info = dropZone.querySelector(".selected-file-info");
+      const fileNameText = dropZone.querySelector(".file-name-text");
+      const clearBtn = dropZone.querySelector(".clear-file-btn");
+
+      dropZone.addEventListener("click", () => fileInput.click());
+
+      dropZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropZone.classList.add("dragover");
+      });
+
+      ["dragleave", "dragend"].forEach(type => {
+        dropZone.addEventListener(type, () => {
+          dropZone.classList.remove("dragover");
+        });
+      });
+
+      dropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropZone.classList.remove("dragover");
+        if (e.dataTransfer.files.length) {
+          fileInput.files = e.dataTransfer.files;
+          updateState();
+        }
+      });
+
+      fileInput.addEventListener("change", () => {
+        updateState();
+      });
+
+      clearBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        fileInput.value = "";
+        updateState();
+      });
+
+      function updateState() {
+        if (fileInput.files.length) {
+          prompt.style.display = "none";
+          info.style.display = "flex";
+          if (fileInput.files.length === 1) {
+            fileNameText.textContent = fileInput.files[0].name;
+          } else {
+            fileNameText.textContent = `${fileInput.files.length} files selected`;
+          }
+          btnSubmit.disabled = false;
+          if (onFileSelected) onFileSelected(fileInput.files);
+        } else {
+          prompt.style.display = "flex";
+          info.style.display = "none";
+          btnSubmit.disabled = true;
+          if (onFileSelected) onFileSelected(null);
+        }
+      }
+    }
+
+    // Setup dropzones
+    setupDragAndDrop("outline-drop-zone", "outline-file-input", "btn-outline-submit");
+    setupDragAndDrop("persona-drop-zone", "persona-file-input", "btn-persona-submit", () => checkPersonaInputs());
+    setupDragAndDrop("resume-drop-zone", "resume-file-input", "btn-resume-submit", () => checkResumeInputs());
+
+    // Validate multi-field forms
+    const inputPersona = document.getElementById("input-persona");
+    const inputJob = document.getElementById("input-job");
+    const btnPersonaSubmit = document.getElementById("btn-persona-submit");
+    
+    [inputPersona, inputJob].forEach(input => {
+      input.addEventListener("input", checkPersonaInputs);
+    });
+
+    function checkPersonaInputs() {
+      const filesSelected = document.getElementById("persona-file-input").files.length > 0;
+      const personaVal = inputPersona.value.trim();
+      const jobVal = inputJob.value.trim();
+      btnPersonaSubmit.disabled = !(filesSelected && personaVal && jobVal);
+    }
+
+    const inputJobDescription = document.getElementById("input-job-description");
+    const btnResumeSubmit = document.getElementById("btn-resume-submit");
+
+    inputJobDescription.addEventListener("input", checkResumeInputs);
+
+    function checkResumeInputs() {
+      const fileSelected = document.getElementById("resume-file-input").files.length > 0;
+      const jobDescVal = inputJobDescription.value.trim();
+      btnResumeSubmit.disabled = !(fileSelected && jobDescVal);
+    }
+
+    // Generic fetch helper
+    async function postFormData(url, formData) {
       const response = await fetch(url, {
         method: "POST",
         body: formData
       });
-
-      const payload = await response.json().catch(() => ({}));
+      const data = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error(payload.detail || "Request failed");
+        throw new Error(data.detail || "Request failed");
       }
-      return payload;
+      return data;
     }
 
-    document.getElementById("outline-submit").addEventListener("click", async () => {
-      const fileInput = document.getElementById("outline-file");
-      const status = document.getElementById("outline-status");
-      const result = document.getElementById("outline-result");
+    // Hide/show feedback widget
+    function showFeedbackWidget(analysisId, parentContainerId) {
+      currentAnalysisId = analysisId;
+      const widget = document.getElementById("feedback-widget");
+      const thanks = document.getElementById("feedback-thanks-message");
+      const prompt = document.getElementById("feedback-prompt-text");
+      const actions = document.getElementById("feedback-action-buttons");
 
-      if (!fileInput.files.length) {
-        setStatus(status, "Choose a PDF first.", true);
-        return;
+      thanks.style.display = "none";
+      prompt.style.display = "block";
+      actions.style.display = "flex";
+      
+      const parent = document.getElementById(parentContainerId);
+      parent.appendChild(widget);
+      widget.style.display = "flex";
+    }
+
+    function hideFeedbackWidget() {
+      const widget = document.getElementById("feedback-widget");
+      widget.style.display = "none";
+    }
+
+    async function submitFeedback(rating) {
+      const thanks = document.getElementById("feedback-thanks-message");
+      const prompt = document.getElementById("feedback-prompt-text");
+      const actions = document.getElementById("feedback-action-buttons");
+
+      prompt.style.display = "none";
+      actions.style.display = "none";
+      thanks.style.display = "flex";
+
+      // Save rating in history (locally)
+      if (currentAnalysisId) {
+        let history = JSON.parse(localStorage.getItem('docintel_history') || '[]');
+        let item = history.find(h => h.payload && h.payload.analysis_id === currentAnalysisId);
+        if (item) {
+          item.feedback = rating;
+          localStorage.setItem('docintel_history', JSON.stringify(history));
+        }
       }
 
-      setStatus(status, "Processing outline...");
+      // If backend feedback endpoint were live:
+      try {
+        await fetch("/api/feedback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ analysis_id: currentAnalysisId, useful: rating === 1 })
+        });
+      } catch (e) {
+        console.warn("Feedback endpoint unreachable (expected in Phase 1)");
+      }
+    }
+
+    // Dynamic collapsible tree toggle
+    function toggleOutline(headerElement) {
+      const chevron = headerElement.querySelector(".outline-chevron");
+      chevron.classList.toggle("expanded");
+      const children = headerElement.nextElementSibling;
+      if (children) {
+        children.classList.toggle("expanded");
+      }
+    }
+
+    // Flow 1: Outline extraction request
+    document.getElementById("btn-outline-submit").addEventListener("click", async () => {
+      const fileInput = document.getElementById("outline-file-input");
+      const loader = document.getElementById("status-outline-loading");
+      const errorMsg = document.getElementById("status-outline-error");
+      const resultWrap = document.getElementById("results-outline");
+      const treeContainer = document.getElementById("outline-tree-container");
+      const titleBanner = document.getElementById("outline-doc-title");
+
+      if (!fileInput.files.length) return;
+
+      loader.style.display = "flex";
+      errorMsg.style.display = "none";
+      resultWrap.style.display = "none";
+      hideFeedbackWidget();
+
       const formData = new FormData();
       formData.append("file", fileInput.files[0]);
 
       try {
-        const payload = await postForm("/api/outline", formData);
-        result.textContent = JSON.stringify(payload, null, 2);
-        setStatus(status, "Outline extracted.");
-      } catch (error) {
-        setStatus(status, error.message, true);
+        const data = await postFormData("/api/outline", formData);
+        titleBanner.textContent = data.title || fileInput.files[0].name;
+        
+        // Render tree
+        treeContainer.innerHTML = "";
+        if (data.outline && data.outline.length) {
+          renderOutlineNodes(treeContainer, data.outline);
+        } else {
+          treeContainer.innerHTML = `<div style="font-style:italic;color:var(--text-secondary);padding:10px;">No sections found in this document.</div>`;
+        }
+
+        resultWrap.style.display = "flex";
+        loader.style.display = "none";
+        
+        // Save to activity history
+        saveToHistory("outline", data.title || fileInput.files[0].name, data);
+        
+        // Show feedback widget inside outline results
+        showFeedbackWidget(data.analysis_id || 1, "results-outline");
+      } catch (err) {
+        loader.style.display = "none";
+        errorMsg.style.display = "flex";
+        errorMsg.querySelector("span").textContent = err.message;
       }
     });
 
-    document.getElementById("persona-submit").addEventListener("click", async () => {
-      const filesInput = document.getElementById("persona-files");
-      const personaInput = document.getElementById("persona-input");
-      const jobInput = document.getElementById("job-input");
-      const status = document.getElementById("persona-status");
-      const result = document.getElementById("persona-result");
+    function renderOutlineNodes(container, nodes) {
+      nodes.forEach(node => {
+        const nodeEl = document.createElement("div");
+        nodeEl.className = "outline-node";
 
-      if (!filesInput.files.length) {
-        setStatus(status, "Upload at least one PDF.", true);
-        return;
-      }
+        const hasChildren = node.children && node.children.length > 0;
+        
+        nodeEl.innerHTML = `
+          <div class="outline-header" ${hasChildren ? 'onclick="toggleOutline(this)"' : ''}>
+            <span class="outline-chevron" style="visibility: ${hasChildren ? 'visible' : 'hidden'}">▸</span>
+            <span class="outline-node-text">${escapeHtml(node.heading)}</span>
+            <span class="outline-node-page">Page ${node.page}</span>
+          </div>
+        `;
 
-      if (!personaInput.value.trim() || !jobInput.value.trim()) {
-        setStatus(status, "Persona and job are both required.", true);
-        return;
-      }
+        if (hasChildren) {
+          const childrenContainer = document.createElement("div");
+          childrenContainer.className = "outline-children";
+          renderOutlineNodes(childrenContainer, node.children);
+          nodeEl.appendChild(childrenContainer);
+        }
 
-      setStatus(status, "Ranking relevant sections...");
+        container.appendChild(nodeEl);
+      });
+    }
+
+    // Flow 2: Persona section ranking request
+    document.getElementById("btn-persona-submit").addEventListener("click", async () => {
+      const filesInput = document.getElementById("persona-file-input");
+      const personaInput = document.getElementById("input-persona");
+      const jobInput = document.getElementById("input-job");
+      const loader = document.getElementById("status-persona-loading");
+      const errorMsg = document.getElementById("status-persona-error");
+      const resultWrap = document.getElementById("results-persona");
+      
+      const bestContainer = document.getElementById("persona-best-matches");
+      const relevantContainer = document.getElementById("persona-relevant-matches");
+
+      if (!filesInput.files.length) return;
+
+      loader.style.display = "flex";
+      errorMsg.style.display = "none";
+      resultWrap.style.display = "none";
+      hideFeedbackWidget();
+
       const formData = new FormData();
-      Array.from(filesInput.files).forEach((file) => formData.append("files", file));
+      Array.from(filesInput.files).forEach(file => {
+        formData.append("files", file);
+      });
       formData.append("persona", personaInput.value.trim());
       formData.append("job", jobInput.value.trim());
 
       try {
-        const payload = await postForm("/api/persona", formData);
-        result.textContent = JSON.stringify(payload, null, 2);
-        setStatus(status, "Ranking complete.");
-      } catch (error) {
-        setStatus(status, error.message, true);
+        const data = await postFormData("/api/persona", formData);
+        
+        bestContainer.innerHTML = "";
+        relevantContainer.innerHTML = "";
+
+        const sections = data.subsection_analysis || [];
+        const metadata = data.extracted_sections || [];
+
+        if (sections.length === 0) {
+          bestContainer.innerHTML = `<div style="font-style:italic;padding:10px;">No matching sections found.</div>`;
+        }
+
+        sections.forEach((sec, idx) => {
+          const meta = metadata[idx] || {};
+          const card = document.createElement("div");
+          card.className = "card";
+          
+          card.innerHTML = `
+            <div class="card-header">
+              <span class="card-title">${escapeHtml(meta.section_title || "Relevant Section")}</span>
+              <span class="card-meta">${escapeHtml(sec.document)} (Page ${sec.page_number})</span>
+            </div>
+            <div class="card-content">"${escapeHtml(sec.refined_text)}"</div>
+          `;
+
+          // Put first 2 in "Best Match", the rest in "Also Relevant"
+          if (idx < 2) {
+            bestContainer.appendChild(card);
+          } else {
+            relevantContainer.appendChild(card);
+          }
+        });
+
+        // Hide "Also Relevant" header if empty
+        const alsoRelevantTitle = relevantContainer.previousElementSibling;
+        if (sections.length <= 2) {
+          alsoRelevantTitle.style.display = "none";
+        } else {
+          alsoRelevantTitle.style.display = "block";
+        }
+
+        resultWrap.style.display = "flex";
+        loader.style.display = "none";
+
+        // Save history (use first document name or query as key name)
+        const historyTitle = `Query for "${personaInput.value.trim()}"`;
+        saveToHistory("persona", historyTitle, data);
+
+        // Show feedback widget
+        showFeedbackWidget(data.analysis_id || 1, "results-persona");
+      } catch (err) {
+        loader.style.display = "none";
+        errorMsg.style.display = "flex";
+        errorMsg.querySelector("span").textContent = err.message;
       }
     });
+
+    // Flow 3: Resume Fit Checker request
+    document.getElementById("btn-resume-submit").addEventListener("click", async () => {
+      const fileInput = document.getElementById("resume-file-input");
+      const jobDescInput = document.getElementById("input-job-description");
+      const loader = document.getElementById("status-resume-loading");
+      const errorMsg = document.getElementById("status-resume-error");
+      const resultWrap = document.getElementById("results-resume");
+
+      const badge = document.getElementById("resume-match-badge");
+      const explanation = document.getElementById("resume-match-explanation");
+      const matchedPills = document.getElementById("resume-matched-pills");
+      const missingPills = document.getElementById("resume-missing-pills");
+      const cardsContainer = document.getElementById("resume-matching-cards");
+
+      if (!fileInput.files.length) return;
+
+      loader.style.display = "flex";
+      errorMsg.style.display = "none";
+      resultWrap.style.display = "none";
+      hideFeedbackWidget();
+
+      const formData = new FormData();
+      formData.append("resume", fileInput.files[0]);
+      formData.append("job_description", jobDescInput.value.trim());
+
+      try {
+        const data = await postFormData("/api/resume-fit", formData);
+        
+        // Match category
+        badge.textContent = data.match_category;
+        badge.className = "match-badge-large"; // Reset
+        
+        if (data.match_category === "Strong Match") {
+          badge.classList.add("strong");
+        } else if (data.match_category === "Moderate Match") {
+          badge.classList.add("moderate");
+        } else {
+          badge.classList.add("weak");
+        }
+
+        // Explanation
+        explanation.textContent = data.explanation;
+
+        // Matched pills
+        matchedPills.innerHTML = "";
+        if (data.matched_keywords && data.matched_keywords.length) {
+          data.matched_keywords.forEach(kw => {
+            matchedPills.innerHTML += `<span class="pill pill-green">${escapeHtml(kw)}</span>`;
+          });
+        } else {
+          matchedPills.innerHTML = `<span class="pill-empty">No matching skills found.</span>`;
+        }
+
+        // Missing pills
+        missingPills.innerHTML = "";
+        if (data.missing_keywords && data.missing_keywords.length) {
+          data.missing_keywords.forEach(kw => {
+            missingPills.innerHTML += `<span class="pill pill-orange">${escapeHtml(kw)}</span>`;
+          });
+        } else {
+          missingPills.innerHTML = `<span class="pill-empty">No missing skills highlighted!</span>`;
+        }
+
+        // Matching sections cards
+        cardsContainer.innerHTML = "";
+        if (data.relevant_sections && data.relevant_sections.length) {
+          data.relevant_sections.forEach(sec => {
+            cardsContainer.innerHTML += `
+              <div class="card">
+                <div class="card-header">
+                  <span class="card-title">${escapeHtml(sec.section_title)}</span>
+                  <span class="card-meta">Page ${sec.page_number}</span>
+                </div>
+                <div class="card-content">"${escapeHtml(sec.refined_text)}"</div>
+              </div>
+            `;
+          });
+        } else {
+          cardsContainer.innerHTML = `<div style="font-style:italic;padding:10px;">No structured sections could be isolated.</div>`;
+        }
+
+        resultWrap.style.display = "flex";
+        loader.style.display = "none";
+
+        // Save history
+        saveToHistory("resumefit", `Fit for ${fileInput.files[0].name}`, data);
+
+        // Show feedback widget
+        showFeedbackWidget(data.analysis_id || 1, "results-resume");
+      } catch (err) {
+        loader.style.display = "none";
+        errorMsg.style.display = "flex";
+        errorMsg.querySelector("span").textContent = err.message;
+      }
+    });
+
+    // Local Storage History management
+    function saveToHistory(workflow, title, payload) {
+      let history = JSON.parse(localStorage.getItem('docintel_history') || '[]');
+      // Delete existing matching title
+      history = history.filter(item => !(item.workflow === workflow && item.title === title));
+      history.unshift({
+        workflow,
+        title,
+        payload,
+        timestamp: new Date().toISOString()
+      });
+      // Limit to 10
+      history = history.slice(0, 10);
+      localStorage.setItem('docintel_history', JSON.stringify(history));
+    }
+
+    function renderHistory() {
+      const container = document.getElementById("history-list-container");
+      const history = JSON.parse(localStorage.getItem('docintel_history') || '[]');
+
+      if (history.length === 0) {
+        container.innerHTML = `<div class="history-empty">No recent activity found. Try running an analysis first!</div>`;
+        return;
+      }
+
+      container.innerHTML = "";
+      history.forEach((item, index) => {
+        const itemEl = document.createElement("div");
+        itemEl.className = "history-item";
+        
+        let typeLabel = "";
+        let iconSvg = "";
+
+        if (item.workflow === "outline") {
+          typeLabel = "Document Outline";
+          iconSvg = `<svg class="history-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>`;
+        } else if (item.workflow === "persona") {
+          typeLabel = "Information Finder";
+          iconSvg = `<svg class="history-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
+        } else {
+          typeLabel = "Resume Matcher";
+          iconSvg = `<svg class="history-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><path d="M12 11v6"/><path d="M9 14h6"/></svg>`;
+        }
+
+        const dateFormatted = new Date(item.timestamp).toLocaleString();
+
+        itemEl.innerHTML = `
+          <div class="history-item-left">
+            ${iconSvg}
+            <div class="history-item-details">
+              <span class="history-item-title">${escapeHtml(item.title)}</span>
+              <span class="history-item-meta">${typeLabel}</span>
+            </div>
+          </div>
+          <span class="history-item-time">${dateFormatted}</span>
+        `;
+
+        itemEl.addEventListener("click", () => restoreHistoryItem(item));
+        container.appendChild(itemEl);
+      });
+    }
+
+    // Restore results from history
+    function restoreHistoryItem(item) {
+      if (item.workflow === "outline") {
+        switchTab("outline");
+        const titleBanner = document.getElementById("outline-doc-title");
+        const treeContainer = document.getElementById("outline-tree-container");
+        const resultWrap = document.getElementById("results-outline");
+
+        titleBanner.textContent = item.title;
+        treeContainer.innerHTML = "";
+        renderOutlineNodes(treeContainer, item.payload.outline);
+        resultWrap.style.display = "flex";
+        
+        showFeedbackWidget(item.payload.analysis_id || 1, "results-outline");
+      } 
+      else if (item.workflow === "persona") {
+        switchTab("persona");
+        const resultWrap = document.getElementById("results-persona");
+        const bestContainer = document.getElementById("persona-best-matches");
+        const relevantContainer = document.getElementById("persona-relevant-matches");
+
+        bestContainer.innerHTML = "";
+        relevantContainer.innerHTML = "";
+
+        const sections = item.payload.subsection_analysis || [];
+        const metadata = item.payload.extracted_sections || [];
+
+        sections.forEach((sec, idx) => {
+          const meta = metadata[idx] || {};
+          const card = document.createElement("div");
+          card.className = "card";
+          
+          card.innerHTML = `
+            <div class="card-header">
+              <span class="card-title">${escapeHtml(meta.section_title || "Relevant Section")}</span>
+              <span class="card-meta">${escapeHtml(sec.document)} (Page ${sec.page_number})</span>
+            </div>
+            <div class="card-content">"${escapeHtml(sec.refined_text)}"</div>
+          `;
+
+          if (idx < 2) {
+            bestContainer.appendChild(card);
+          } else {
+            relevantContainer.appendChild(card);
+          }
+        });
+
+        const alsoRelevantTitle = relevantContainer.previousElementSibling;
+        if (sections.length <= 2) {
+          alsoRelevantTitle.style.display = "none";
+        } else {
+          alsoRelevantTitle.style.display = "block";
+        }
+
+        resultWrap.style.display = "flex";
+        showFeedbackWidget(item.payload.analysis_id || 1, "results-persona");
+      } 
+      else if (item.workflow === "resumefit") {
+        switchTab("resumefit");
+        const resultWrap = document.getElementById("results-resume");
+        const badge = document.getElementById("resume-match-badge");
+        const explanation = document.getElementById("resume-match-explanation");
+        const matchedPills = document.getElementById("resume-matched-pills");
+        const missingPills = document.getElementById("resume-missing-pills");
+        const cardsContainer = document.getElementById("resume-matching-cards");
+
+        badge.textContent = item.payload.match_category;
+        badge.className = "match-badge-large";
+        
+        if (item.payload.match_category === "Strong Match") {
+          badge.classList.add("strong");
+        } else if (item.payload.match_category === "Moderate Match") {
+          badge.classList.add("moderate");
+        } else {
+          badge.classList.add("weak");
+        }
+
+        explanation.textContent = item.payload.explanation;
+
+        matchedPills.innerHTML = "";
+        if (item.payload.matched_keywords && item.payload.matched_keywords.length) {
+          item.payload.matched_keywords.forEach(kw => {
+            matchedPills.innerHTML += `<span class="pill pill-green">${escapeHtml(kw)}</span>`;
+          });
+        } else {
+          matchedPills.innerHTML = `<span class="pill-empty">No matching skills found.</span>`;
+        }
+
+        missingPills.innerHTML = "";
+        if (item.payload.missing_keywords && item.payload.missing_keywords.length) {
+          item.payload.missing_keywords.forEach(kw => {
+            missingPills.innerHTML += `<span class="pill pill-orange">${escapeHtml(kw)}</span>`;
+          });
+        } else {
+          missingPills.innerHTML = `<span class="pill-empty">No missing skills highlighted!</span>`;
+        }
+
+        cardsContainer.innerHTML = "";
+        if (item.payload.relevant_sections && item.payload.relevant_sections.length) {
+          item.payload.relevant_sections.forEach(sec => {
+            cardsContainer.innerHTML += `
+              <div class="card">
+                <div class="card-header">
+                  <span class="card-title">${escapeHtml(sec.section_title)}</span>
+                  <span class="card-meta">Page ${sec.page_number}</span>
+                </div>
+                <div class="card-content">"${escapeHtml(sec.refined_text)}"</div>
+              </div>
+            `;
+          });
+        } else {
+          cardsContainer.innerHTML = `<div style="font-style:italic;padding:10px;">No structured sections could be isolated.</div>`;
+        }
+
+        resultWrap.style.display = "flex";
+        showFeedbackWidget(item.payload.analysis_id || 1, "results-resume");
+      }
+    }
+
+
+    // Stats & Dashboard Logic (Phase 2)
+    async function loadMetrics() {
+      const metricDocs = document.getElementById("metric-docs");
+      const metricResumes = document.getElementById("metric-resumes");
+      const metricUsers = document.getElementById("metric-users");
+      const distContainer = document.getElementById("workflow-dist-container");
+      
+      try {
+        const res = await fetch("/api/metrics");
+        if (!res.ok) throw new Error("Failed to fetch metrics");
+        const data = await res.json();
+        
+        // Animate numbers
+        animateNumber(metricDocs, data.documents_analyzed);
+        animateNumber(metricResumes, data.resume_checks);
+        animateNumber(metricUsers, data.users_helped);
+        
+        // Draw Daily Usage Chart
+        drawDailyChart(data.daily_usage);
+        
+        // Render workflow distribution
+        const total = data.documents_analyzed || 1;
+        const wf = data.workflows || {};
+        
+        const outlineCount = wf.outline || 0;
+        const personaCount = wf.persona || 0;
+        const resumeCount = wf["resume-fit"] || 0;
+        
+        const outlinePct = ((outlineCount / total) * 100).toFixed(0);
+        const personaPct = ((personaCount / total) * 100).toFixed(0);
+        const resumePct = ((resumeCount / total) * 100).toFixed(0);
+        
+        distContainer.innerHTML = `
+          <div class="workflow-item">
+            <div class="workflow-label-row">
+              <span>Document Navigator (Outline)</span>
+              <span>${outlineCount} (${outlinePct}%)</span>
+            </div>
+            <div class="workflow-bar-bg">
+              <div class="workflow-bar-fill" style="width: ${outlinePct}%;"></div>
+            </div>
+          </div>
+          <div class="workflow-item">
+            <div class="workflow-label-row">
+              <span>Information Finder (Persona)</span>
+              <span>${personaCount} (${personaPct}%)</span>
+            </div>
+            <div class="workflow-bar-bg">
+              <div class="workflow-bar-fill" style="width: ${personaPct}%;"></div>
+            </div>
+          </div>
+          <div class="workflow-item">
+            <div class="workflow-label-row">
+              <span>Resume Matcher (Fit Check)</span>
+              <span>${resumeCount} (${resumePct}%)</span>
+            </div>
+            <div class="workflow-bar-bg">
+              <div class="workflow-bar-fill" style="width: ${resumePct}%;"></div>
+            </div>
+          </div>
+        `;
+        
+      } catch (err) {
+        console.error("Error loading metrics:", err);
+      }
+    }
+
+    function animateNumber(element, finalValue) {
+      let start = 0;
+      const duration = 800; // ms
+      const stepTime = 20;
+      const steps = duration / stepTime;
+      const increment = finalValue / steps;
+      
+      const timer = setInterval(() => {
+        start += increment;
+        if (start >= finalValue) {
+          element.textContent = Math.round(finalValue);
+          clearInterval(timer);
+        } else {
+          element.textContent = Math.round(start);
+        }
+      }, stepTime);
+    }
+
+    function drawDailyChart(dailyUsage) {
+      const container = document.getElementById("daily-chart-wrapper");
+      if (!dailyUsage || dailyUsage.length === 0) {
+        container.innerHTML = `<div style="font-style:italic;color:var(--text-muted);text-align:center;width:100%;">No activity logs recorded yet. Run some analyses to populate the chart!</div>`;
+        return;
+      }
+
+      // Width and height of SVG
+      const width = container.clientWidth || 600;
+      const height = 200;
+      
+      // Padding
+      const paddingLeft = 40;
+      const paddingRight = 20;
+      const paddingTop = 20;
+      const paddingBottom = 30;
+      
+      const plotWidth = width - paddingLeft - paddingRight;
+      const plotHeight = height - paddingTop - paddingBottom;
+      
+      // Find max count to scale y-axis
+      const counts = dailyUsage.map(d => d.count);
+      const maxCount = Math.max(...counts, 5); // Minimum y-scale limit of 5
+      
+      // X scale: number of points
+      const pointsCount = dailyUsage.length;
+      
+      // Generate points coordinates
+      const points = [];
+      dailyUsage.forEach((item, index) => {
+        const x = paddingLeft + (pointsCount > 1 ? (index / (pointsCount - 1)) * plotWidth : plotWidth / 2);
+        const y = paddingTop + plotHeight - (item.count / maxCount) * plotHeight;
+        points.push({ x, y, date: item.date, count: item.count });
+      });
+      
+      // Generate line path
+      let pathD = "";
+      if (points.length > 0) {
+        pathD = `M ${points[0].x} ${points[0].y}`;
+        for (let i = 1; i < points.length; i++) {
+          pathD += ` L ${points[i].x} ${points[i].y}`;
+        }
+      }
+      
+      // Generate area path (shaded under the line)
+      let areaD = "";
+      if (points.length > 0) {
+        areaD = `${pathD} L ${points[points.length - 1].x} ${paddingTop + plotHeight} L ${points[0].x} ${paddingTop + plotHeight} Z`;
+      }
+      
+      // Build SVG XML
+      let svgHtml = `<svg width="100%" height="${height}" viewBox="0 0 ${width} ${height}" style="overflow: visible;">`;
+      
+      // Add Grid lines and Y axis labels
+      const yTicks = 4;
+      for (let i = 0; i <= yTicks; i++) {
+        const yVal = Math.round((i / yTicks) * maxCount);
+        const yCo = paddingTop + plotHeight - (i / yTicks) * plotHeight;
+        // Line
+        svgHtml += `<line x1="${paddingLeft}" y1="${yCo}" x2="${width - paddingRight}" y2="${yCo}" stroke="var(--border-color)" stroke-width="1" stroke-dasharray="4,4" />`;
+        // Label
+        svgHtml += `<text x="${paddingLeft - 10}" y="${yCo + 4}" font-size="10" fill="var(--text-secondary)" text-anchor="end">${yVal}</text>`;
+      }
+      
+      // Area fill
+      if (areaD) {
+        svgHtml += `<path d="${areaD}" fill="var(--accent-light)" opacity="0.4" />`;
+      }
+      
+      // Line path
+      if (pathD) {
+        svgHtml += `<path d="${pathD}" fill="none" stroke="var(--accent-color)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />`;
+      }
+      
+      // Interactive Dots
+      points.forEach(p => {
+        svgHtml += `
+          <circle cx="${p.x}" cy="${p.y}" r="4" fill="var(--bg-main)" stroke="var(--accent-color)" stroke-width="2" style="cursor:pointer;">
+            <title>${p.date}: ${p.count} analyses</title>
+          </circle>
+        `;
+      });
+      
+      // X axis labels (show first, middle, last to prevent overlap)
+      if (points.length > 0) {
+        const showIdx = [0, Math.floor(points.length / 2), points.length - 1];
+        showIdx.forEach(idx => {
+          if (idx < points.length) {
+            const p = points[idx];
+            const dateObj = new Date(p.date);
+            const label = dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+            svgHtml += `<text x="${p.x}" y="${paddingTop + plotHeight + 18}" font-size="10" fill="var(--text-secondary)" text-anchor="middle">${label}</text>`;
+          }
+        });
+      }
+      
+      svgHtml += `</svg>`;
+      container.innerHTML = svgHtml;
+    }
+
+    // Helper functions
+    function escapeHtml(text) {
+      if (!text) return "";
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      };
+      return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+    }
+
+    // Run init
+    initTabs();
   </script>
 </body>
 </html>

@@ -15,6 +15,8 @@ from .outline_extractor import extract_outline
 from .output_formatter import build_output_json
 from .relevance_scorer import rank_sections
 from .section_splitter import split_sections
+from .resume_fit import analyze_resume_fit
+from .database import init_db, log_event, log_feedback, get_metrics
 
 APP_ROOT = Path(__file__).resolve().parent.parent
 FRONTEND_FILE = APP_ROOT / "frontend" / "index.html"
@@ -28,6 +30,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.on_event("startup")
+def startup_db_init() -> None:
+    """Initialize database tables on FastAPI startup."""
+    init_db()
+
 
 
 def _validate_pdf_upload(upload: UploadFile) -> str:
@@ -62,9 +71,15 @@ async def serve_frontend() -> FileResponse:
 async def outline(file: UploadFile = File(...)) -> dict:
     """Extract a title and heading outline from one PDF."""
     with TemporaryDirectory() as temp_dir:
-        _, pdf_path = _save_upload(file, Path(temp_dir))
+        filename, pdf_path = _save_upload(file, Path(temp_dir))
         try:
-            return extract_outline(pdf_path)
+            res = extract_outline(pdf_path)
+            event_id = log_event(
+                workflow="outline",
+                details={"filename": filename}
+            )
+            res["analysis_id"] = event_id
+            return res
         except Exception as exc:  # noqa: BLE001
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
@@ -103,4 +118,63 @@ async def persona(
 
         ranked = rank_sections(all_sections, persona, job)
         timestamp = datetime.now(timezone.utc).isoformat()
-        return build_output_json(input_documents, persona, job, ranked, timestamp)
+        res = build_output_json(input_documents, persona, job, ranked, timestamp)
+        event_id = log_event(
+            workflow="persona",
+            details={
+                "filenames": input_documents,
+                "persona": persona,
+                "job": job
+            }
+        )
+        res["analysis_id"] = event_id
+        return res
+
+
+@app.post("/resume-fit")
+@app.post("/api/resume-fit")
+async def resume_fit(
+    resume: UploadFile = File(...),
+    job_description: str = Form(...),
+) -> dict:
+    """Check how well a resume matches a job description."""
+    with TemporaryDirectory() as temp_dir:
+        resume_name, pdf_path = _save_upload(resume, Path(temp_dir))
+        try:
+            result = analyze_resume_fit(resume_name, pdf_path, job_description)
+            event_id = log_event(
+                workflow="resume-fit",
+                details={
+                    "filename": resume_name,
+                    "match_category": result["match_category"],
+                    "match_score": result["match_score"],
+                    "matched_count": len(result["matched_keywords"]),
+                    "missing_count": len(result["missing_keywords"])
+                }
+            )
+            result["analysis_id"] = event_id
+            return result
+        except Exception as exc:  # noqa: BLE001
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/feedback")
+@app.post("/api/feedback")
+async def feedback(payload: dict) -> dict:
+    """Log user feedback (thumbs up/down) for an analysis."""
+    analysis_id = payload.get("analysis_id")
+    useful = payload.get("useful")
+    if analysis_id is None or useful is None:
+        raise HTTPException(status_code=400, detail="analysis_id and useful are required")
+    success = log_feedback(int(analysis_id), bool(useful))
+    return {"status": "success" if success else "failed"}
+
+
+@app.get("/metrics")
+@app.get("/api/metrics")
+async def metrics() -> dict:
+    """Retrieve raw metrics (real data only)."""
+    try:
+        return get_metrics()
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=str(exc)) from exc

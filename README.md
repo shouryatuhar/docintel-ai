@@ -4,138 +4,131 @@
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Offline, CPU-only PDF intelligence — heading extraction and persona-driven section ranking**
+**A production-quality document intelligence platform — collapsible navigation outlines, target viewpoint analysis, and resume match checking.**
 
-DocIntel AI turns PDF collections into structured JSON: hierarchical outlines for navigation, or ranked sections tailored to a user persona and task. It runs fully on CPU with no network calls—ideal for air-gapped environments, batch pipelines, and reproducible document workflows.
-
-Live app: [https://docintel-ae3ewvnlr-shouryatuhars-projects.vercel.app](https://docintel-ae3ewvnlr-shouryatuhars-projects.vercel.app)
+DocIntel AI has been extended from a command-line tool into a full-scale document intelligence system. It offers a beautiful Notion-inspired sidebar SPA interface with light/dark modes, target-driven section queries, and a robust resume fit checker with automatic Google Form and Spreadsheet synchronization.
 
 ---
 
-## How it works
+## Key Features
 
-Two modes share the same font-analysis core; persona mode adds TF-IDF ranking.
-
-```
-                    ┌─────────────────────────────────────┐
-                    │           DocIntel AI CLI           │
-                    │     --mode outline | persona        │
-                    └─────────────────┬───────────────────┘
-                                      │
-              ┌───────────────────────┴───────────────────────┐
-              ▼                                               ▼
-    ┌──────────────────┐                          ┌──────────────────┐
-    │  OUTLINE MODE    │                          │  PERSONA MODE    │
-    │  PDFs in /input  │                          │  PDFs + manifest │
-    └────────┬─────────┘                          └────────┬─────────┘
-             │                                             │
-             ▼                                             ▼
-    ┌──────────────────┐                          ┌──────────────────┐
-    │ outline_extractor│                          │ pdf_reader         │
-    │ font thresholds  │                          │ section_splitter   │
-    │ heading merge    │                          │ relevance_scorer   │
-    └────────┬─────────┘                          │ output_formatter   │
-             │                                    └────────┬─────────┘
-             ▼                                             ▼
-    ┌──────────────────┐                          ┌──────────────────┐
-    │  per-PDF JSON      │                          │ challenge1b_     │
-    │  title + outline   │                          │ output.json      │
-    └──────────────────┘                          └──────────────────┘
-```
+1. **Notion-Inspired Frontend SPA**: Completely rewritten in plain HTML, CSS, and Vanilla JS. It features a responsive sidebar layout, calm sand-gray tones, dynamic loading states, and a dark theme toggle. All technical language (like TF-IDF or JSON) has been removed in favor of user-first terminology.
+2. **Document Navigator ("See what's inside")**: Drops a document, learns its font sizes and hierarchies, and generates an interactive, collapsible accordion tree outline with page numbers.
+3. **Information Finder ("Find what matters")**: Performs keyword/sentence relevance ranking across multiple PDFs from a specific perspective or question. Results are displayed as cards categorized as **Best Match** and **Also Relevant**.
+4. **Resume Matcher ("Will my resume fit?")**: Compares a resume PDF against a pasted job description. It extracts role-specific unigram and bigram skills (filtering out English stopwords and 108 recruitment-filler words), matches them against the text, classifies matching strength (**Strong**, **Moderate**, or **Weak Match**), and details a human explanation of the results.
+5. **Durable Analytics**: Tracks processed documents, resume checks, daily usage, and workflow breakdowns. It automatically uses **Vercel KV / Upstash Redis** in production via lightweight HTTPS REST calls (no heavy binary client dependencies) and falls back to **SQLite** (`docintel.db`) in local development.
+6. **Activity Log & Local History**: Saves the last 10 transactions in `localStorage`, letting users click and restore previous analyses instantly.
+7. **Google Sheets Ops Dashboard**: Auto-analyzes incoming resumes submitted through a Google Form, processes them via the Vercel API, and displays results, missing skills, and color-coded match scores in a spreadsheet.
 
 ---
 
-## Quick start
-
-```bash
-git clone <your-repo-url> docintel-ai && cd docintel-ai
-docker build -t docintel-ai .
-docker run --rm -v "$(pwd)/samples/input:/data/input" -v "$(pwd)/samples/output:/data/output" \
-  docintel-ai --mode outline --input /data/input --output /data/output
-```
-
-Persona mode (collection folder must include `challenge1b_input.json`):
-
-```bash
-docker run --rm -v "$(pwd)/samples/persona:/data/input" -v "$(pwd)/samples/persona/output:/data/output" \
-  docintel-ai --mode persona --input /data/input --output /data/output
-```
-
-Or use Compose:
-
-```bash
-docker compose run --rm outline
-docker compose run --rm persona
-```
-
----
-
-## Architecture
-
-| Module | Role |
-|--------|------|
-| `src/main.py` | CLI entrypoint, logging, error handling |
-| `src/heading_logic.py` | Font profiling, thresholds, heading merge helpers |
-| `src/outline_extractor.py` | Outline extraction and classified line iteration |
-| `src/pdf_reader.py` | Page-level text extraction |
-| `src/section_splitter.py` | Sections via shared heading logic |
-| `src/relevance_scorer.py` | TF-IDF + cosine similarity ranking |
-| `src/output_formatter.py` | Schema-aligned persona output JSON |
-
-See [docs/approach.md](docs/approach.md) for the full technical narrative.
-
----
-
-## Why this works
-
-**Font analysis beats regex for structure.** PDFs encode hierarchy in font size and weight, not markdown syntax. DocIntel learns each document’s size distribution, then labels lines as H1–H3 using thresholds, bold cues, and common section keywords—so outlines stay accurate across flyers, manuals, and reports without hand-tuned rules per template.
-
-**Persona mode is search without a search engine.** The persona and job description form a query; each section becomes a document in a tiny corpus. TF-IDF highlights distinctive terms (e.g. “gluten-free”, “onboarding forms”) while down-weighting boilerplate. Cosine similarity ranks sections by intent alignment—fast, interpretable, and small enough to ship in a single container.
-
-**Production-minded defaults.** One Dockerfile, one requirements file, graceful skips for corrupt PDFs, and timestamped logs make the tool easy to demo, test in CI, and drop into existing ETL jobs.
-
----
-
-## Project layout
+## Project Layout
 
 ```
 docintel-ai/
 ├── README.md
-├── Dockerfile
+├── vercel.json                 # Vercel serverless deployment config
+├── Dockerfile                  # Offline CPU processing container
 ├── docker-compose.yml
-├── requirements.txt
+├── requirements.txt            # Python dependencies
 ├── src/
-│   ├── main.py
-│   ├── outline_extractor.py
-│   ├── pdf_reader.py
-│   ├── section_splitter.py
-│   ├── relevance_scorer.py
-│   └── output_formatter.py
-├── samples/
-│   ├── input/          # outline mode PDFs
-│   ├── output/         # outline JSON results
-│   └── persona/        # persona mode collection
+│   ├── api.py                  # FastAPI serverless endpoints
+│   ├── resume_fit.py           # Skill extraction, matching, and scoring
+│   ├── database.py             # Redis / SQLite analytics layer
+│   ├── pdf_reader.py           # PDF parsing utilities
+│   ├── section_splitter.py     # Font-based heading section splitter
+│   ├── relevance_scorer.py     # TF-IDF relevance scorer
+│   └── output_formatter.py     # Data packaging and sentence trim
+├── frontend/
+│   └── index.html              # Redesigned SPA (FastAPI entrypoint)
+├── public/
+│   └── index.html              # Redesigned SPA (Vercel static entrypoint)
+├── scripts/
+│   └── apps_script.js          # Google Apps Script project code
 └── docs/
     └── approach.md
 ```
 
 ---
 
-## Local development
+## Local Development Setup
 
-```bash
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-pip install fpdf2  # optional: regenerate sample PDFs
-python scripts/generate_sample_pdfs.py
+To run the application locally:
 
-export PYTHONPATH=src
-python src/main.py --mode outline --input samples/input --output samples/output
-python src/main.py --mode persona --input samples/persona --output samples/persona/output
-```
+1. **Activate the environment**:
+   Using the stable pyenv Python environment:
+   ```bash
+   /Users/shouryatuhar/.pyenv/versions/3.11.9/bin/python3 -m pip install -r requirements.txt
+   ```
+
+2. **Start the API Server**:
+   Run uvicorn in the workspace directory (with reload enabled):
+   ```bash
+   export PYTHONPATH=src
+   /Users/shouryatuhar/.pyenv/versions/3.11.9/bin/uvicorn src.api:app --reload
+   ```
+
+3. **Open the App**:
+   Navigate to `http://127.0.0.1:8000/` to interact with the full SPA dashboard.
 
 ---
 
-## License
+## Production Deployment on Vercel
 
-MIT — see [LICENSE](LICENSE).
+The backend integrates FastAPI with Vercel serverless functions (`@vercel/python`).
+
+1. **Routing**: `vercel.json` maps all paths matching `/api/*` to the function `api/index.py` (which imports `src.api.app`). All other paths serve the frontend index statically from `/public/index.html`.
+2. **Database Setup**: Connect Vercel KV or Upstash Redis to your Vercel project. Vercel automatically populates the `KV_REST_API_URL` and `KV_REST_API_TOKEN` environment variables, routing analytics to your cloud database automatically.
+3. **Trigger Build**: Push your main branch to GitHub:
+   ```bash
+   git add .
+   git commit -m "feat: complete document intelligence extension"
+   git push origin main
+   ```
+
+---
+
+## Google Sheets Integration
+
+Follow these steps to synchronize incoming resume submissions:
+
+### 1. Form & Sheet Layout
+Create a Google Form with fields: **Name**, **Email**, **Resume** (File Upload), and **Job Description**. Link the Form to a Google Sheet. Ensure the Submissions sheet contains the following columns:
+1. `Timestamp`
+2. `Name`
+3. `Email`
+4. `Resume File` (Google Drive share URL)
+5. `Job Description` (pasted text)
+6. `Status` (Set default dropdown values: `New`, `Processed`, `Reviewed`, `Followed Up`)
+7. `Matched Keywords`
+8. `Missing Keywords`
+9. `Match Score` (formatted as Percentage inside the sheet)
+10. `Notes`
+
+### 2. Copy the Apps Script
+1. In your Google Sheet, click **Extensions** -> **Apps Script**.
+2. Paste the contents of [scripts/apps_script.js](file:///Users/shouryatuhar/Downloads/docintel-ai-main/scripts/apps_script.js).
+3. Replace the `API_URL` variable with your Vercel deployment URL (e.g. `https://your-app.vercel.app/api/resume-fit`).
+4. Click Save.
+
+### 3. Set up the Trigger
+1. Click the clock icon (**Triggers**) on the left toolbar of the Apps Script dashboard.
+2. Click **+ Add Trigger**.
+3. Select `processNewSubmissions` as the function to run.
+4. Set event source to **Time-driven**, minutes timer, and select **Every 10 minutes**.
+5. Save and authorize permissions.
+
+---
+
+## Dashboard Calculations
+
+The Ops dashboard sheet is configured with the following reporting features:
+
+1. **Most Missing Skills Report**: Place this formula in your Dashboard sheet to parse missing skills, count them, and sort by highest occurrence:
+   ```formula
+   =QUERY(ARRAYFORMULA(TRIM(FLATTEN(SPLIT(Submissions!H2:H, ",")))), "select Col1, count(Col1) where Col1 is not null group by Col1 order by count(Col1) desc label Col1 'Skill', count(Col1) 'Missing Count'")
+   ```
+2. **Conditional Formatting**: Apply a color scale to the `Match Score` column (Column I):
+   * **Red** (< 40%): Background `#FEE2E2`, Text `#991B1B`
+   * **Yellow** (40% - 70%): Background `#FEF3C7`, Text `#92400E`
+   * **Green** (> 70%): Background `#DCFCE7`, Text `#166534`
