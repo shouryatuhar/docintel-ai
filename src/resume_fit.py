@@ -75,7 +75,52 @@ SYNONYM_MAP = {
     "typescript": ["typescript", "ts"],
     "javascript": ["javascript", "js"],
     "golang": ["go", "golang"],
-    "go": ["go", "golang"]
+    "go": ["go", "golang"],
+    # Academic & Degree synonyms
+    "b.tech cse": [
+        "b.tech cse", "b.tech in computer science engineering", 
+        "b.tech in computer science & engineering", "b.tech in computer science and engineering", 
+        "bachelor of technology in computer science", "b.tech in computer science", "btech cse"
+    ],
+    "btech cse": [
+        "b.tech cse", "b.tech in computer science engineering", 
+        "b.tech in computer science & engineering", "b.tech in computer science and engineering", 
+        "bachelor of technology in computer science", "b.tech in computer science", "btech cse"
+    ],
+    "b.tech in computer science engineering": [
+        "b.tech cse", "b.tech in computer science engineering", 
+        "b.tech in computer science & engineering", "b.tech in computer science and engineering", 
+        "bachelor of technology in computer science", "b.tech in computer science", "btech cse"
+    ],
+    "b.tech in computer science and engineering": [
+        "b.tech cse", "b.tech in computer science engineering", 
+        "b.tech in computer science & engineering", "b.tech in computer science and engineering", 
+        "bachelor of technology in computer science", "b.tech in computer science", "btech cse"
+    ],
+    "cse": [
+        "computer science and engineering", "computer science engineering", 
+        "computer science & engineering", "computer science", "cse"
+    ],
+    "computer science": [
+        "computer science and engineering", "computer science engineering", 
+        "computer science & engineering", "computer science", "cse"
+    ],
+    "computer science engineering": [
+        "computer science and engineering", "computer science engineering", 
+        "computer science & engineering", "computer science", "cse"
+    ],
+    "computer science and engineering": [
+        "computer science and engineering", "computer science engineering", 
+        "computer science & engineering", "computer science", "cse"
+    ],
+    "b.tech": ["b.tech", "btech", "bachelor of technology"],
+    "btech": ["b.tech", "btech", "bachelor of technology"],
+    "m.tech": ["m.tech", "mtech", "master of technology"],
+    "mtech": ["m.tech", "mtech", "master of technology"],
+    "bca": ["bca", "bachelor of computer applications"],
+    "mca": ["mca", "master of computer applications"],
+    "bs": ["bs", "b.s.", "bachelor of science", "b.sc"],
+    "ms": ["ms", "m.s.", "master of science", "m.sc"]
 }
 
 # Acronym mapping for standard industry terms
