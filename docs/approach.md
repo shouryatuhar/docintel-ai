@@ -1,14 +1,14 @@
 # Technical Approach
 
-DocIntel AI is an offline, CPU-only pipeline for structured PDF understanding. It combines layout-aware font analysis with lightweight statistical ranking—no cloud APIs, no GPU, and no large language models.
+The CLI analysis pipeline is offline and CPU-only. The web app can optionally use Upstash Redis for analytics; PDF extraction and ranking themselves use local libraries and do not call cloud AI APIs.
 
 ## Outline mode
 
 1. **Font profiling** — Walk every text line with pdfminer and count `(font name, size)` pairs to learn the document’s typographic scale.
-2. **Thresholding** — Map the three most frequent body sizes to dynamic H1/H2/H3 thresholds per document.
+2. **Thresholding** — Use the three most frequent font styles (font name and size) as dynamic H1/H2/H3 thresholds per document. This is a heuristic and can misclassify documents whose body font styles are unusually varied.
 3. **Line classification** — Score each candidate line using font size, bold weight, and generic heading keywords (e.g. “Introduction”, “Summary”).
 4. **Multi-line merge** — Combine consecutive lines that share size and bold styling when the merged title stays under 120 characters.
-5. **JSON export** — Emit `title` plus an `outline` array with level, text, and page number.
+5. **Document map** — Return page-indexed section names and short excerpts. The browser pairs these references with a local PDF preview so users can jump to cited pages.
 
 ## Persona mode
 
@@ -17,14 +17,18 @@ DocIntel AI is an offline, CPU-only pipeline for structured PDF understanding. I
 3. **Ranking** — Build TF-IDF vectors for the persona + job query and each section body; rank by cosine similarity.
 4. **Output** — Select the top five sections and write `challenge1b_output.json` with metadata, ranked section headers, and sentence-trimmed `refined_text` excerpts.
 
+## Invoice review
+
+The prototype extracts explicitly labeled invoice and purchase-order header fields, labeled totals, tax, and line-item rows from selectable PDF text. It compares vendor and PO identifiers, checks invoice amounts against the PO ceiling, and compares line-item quantities and unit prices. Each result retains the source snippet and PDF page. Missing or unsupported values become `needs_review`; the extractor does not guess values or approve payment. It currently targets a known, labeled text format and does not perform OCR.
+
 ## Design constraints
 
 | Constraint | How it is met |
 |------------|----------------|
-| Offline | pdfminer + scikit-learn only; no network calls |
+| Offline analysis | CLI extraction and ranking use pdfminer + scikit-learn locally; optional web analytics can call Upstash Redis |
 | CPU-only | No CUDA or neural inference |
 | Small footprint | Dependencies stay under typical container limits |
-| Graceful degradation | Corrupt PDFs are skipped with logged errors |
+| Graceful degradation | CLI skips corrupt PDFs with logged errors; web requests return an error for an invalid or unprocessable PDF |
 
 ## Extensibility
 

@@ -4,21 +4,22 @@
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**A production-quality document intelligence platform — collapsible navigation outlines, target viewpoint analysis, and resume match checking.**
+**A PDF analysis app with page-linked document maps, relevance-ranked sections, and resume-to-job keyword matching.**
 
-DocIntel AI has been extended from a command-line tool into a full-scale document intelligence system. It offers a beautiful Notion-inspired sidebar SPA interface with light/dark modes, target-driven section queries, and a robust resume fit checker with automatic Google Form and Spreadsheet synchronization.
+DocIntel AI combines a FastAPI service, a browser interface, and an offline CLI. Its analysis uses PDF text/layout extraction and TF-IDF ranking; resume scores are keyword coverage indicators, not hiring recommendations. The Sheets script is an optional integration that must be installed and configured by the operator.
 
 ---
 
 ## Key Features
 
 1. **Notion-Inspired Frontend SPA**: Completely rewritten in plain HTML, CSS, and Vanilla JS. It features a responsive sidebar layout, calm sand-gray tones, dynamic loading states, and a dark theme toggle. All technical language (like TF-IDF or JSON) has been removed in favor of user-first terminology.
-2. **Document Navigator ("See what's inside")**: Drops a document, learns its font sizes and hierarchies, and generates an interactive, collapsible accordion tree outline with page numbers.
+2. **Document Map**: Extracts section labels and short excerpts, then lets users jump to the referenced page in an in-browser PDF preview. Heading detection is heuristic and works best on text PDFs with clear formatting.
 3. **Information Finder ("Find what matters")**: Performs keyword/sentence relevance ranking across multiple PDFs from a specific perspective or question. Results are displayed as cards categorized as **Best Match** and **Also Relevant**.
-4. **Resume Matcher ("Will my resume fit?")**: Compares a resume PDF against a pasted job description. It extracts role-specific unigram and bigram skills (filtering out English stopwords and 108 recruitment-filler words), matches them against the text, classifies matching strength (**Strong**, **Moderate**, or **Weak Match**), and details a human explanation of the results.
-5. **Durable Analytics**: Tracks processed documents, resume checks, daily usage, and workflow breakdowns. It automatically uses **Vercel KV / Upstash Redis** in production via lightweight HTTPS REST calls (no heavy binary client dependencies) and falls back to **SQLite** (`docintel.db`) in local development.
+4. **Resume Matcher ("Will my resume fit?")**: Compares a resume PDF against a pasted job description using a curated skill list and text heuristics. The score measures weighted keyword coverage; it does not assess experience quality or predict hiring outcomes.
+5. **Usage Analytics**: Tracks analysis attempts, resume checks, daily usage, and workflow breakdowns. Configure Upstash Redis REST credentials for shared production storage. Local SQLite is intended for development; serverless `/tmp` storage is ephemeral. Metrics are usage counts, not unique users.
 6. **Activity Log & Local History**: Saves the last 10 transactions in `localStorage`, letting users click and restore previous analyses instantly.
 7. **Google Sheets Ops Dashboard**: Auto-analyzes incoming resumes submitted through a Google Form, processes them via the Vercel API, and displays results, missing skills, and color-coded match scores in a spreadsheet.
+8. **Invoice Review Assistant**: Extracts labeled invoice / purchase-order fields and compares vendor, PO number, line items, and invoice total. Every finding includes source text and page references; unsupported layouts are marked for manual review. This is a rule-based prototype, not an accounting approval system.
 
 ---
 
@@ -33,6 +34,7 @@ docintel-ai/
 ├── requirements.txt            # Python dependencies
 ├── src/
 │   ├── api.py                  # FastAPI serverless endpoints
+│   ├── invoice_review.py       # Invoice / PO extraction and evidence checks
 │   ├── resume_fit.py           # Skill extraction, matching, and scoring
 │   ├── database.py             # Redis / SQLite analytics layer
 │   ├── pdf_reader.py           # PDF parsing utilities
@@ -49,23 +51,27 @@ docintel-ai/
     └── approach.md
 ```
 
+### Try the invoice review demo
+
+The synthetic invoice pair uses explicit labels and a deliberately overpriced toner line. Generate the sample PDFs with `python scripts/generate_sample_pdfs.py`, then upload `samples/invoice_review/invoice.pdf` and `samples/invoice_review/purchase_order.pdf` in **Invoice Review**. Expected checks: vendor and PO number match; toner unit price and invoice total exceed the PO. The prototype currently expects selectable-text PDFs and explicitly labeled line items in the format shown in the sample generator; other layouts may be marked for manual review.
+
 ---
 
 ## Local Development Setup
 
 To run the application locally:
 
-1. **Activate the environment**:
-   Using the stable pyenv Python environment:
+1. **Create an environment and install dependencies** (Python 3.11):
    ```bash
-   /Users/shouryatuhar/.pyenv/versions/3.11.9/bin/python3 -m pip install -r requirements.txt
+   python3.11 -m venv .venv
+   source .venv/bin/activate
+   python -m pip install -r requirements.txt
    ```
 
 2. **Start the API Server**:
    Run uvicorn in the workspace directory (with reload enabled):
    ```bash
-   export PYTHONPATH=src
-   /Users/shouryatuhar/.pyenv/versions/3.11.9/bin/uvicorn src.api:app --reload
+   uvicorn src.api:app --reload
    ```
 
 3. **Open the App**:
@@ -77,8 +83,8 @@ To run the application locally:
 
 The backend integrates FastAPI with Vercel serverless functions (`@vercel/python`).
 
-1. **Routing**: `vercel.json` maps all paths matching `/api/*` to the function `api/index.py` (which imports `src.api.app`). All other paths serve the frontend index statically from `/public/index.html`.
-2. **Database Setup**: Connect Vercel KV or Upstash Redis to your Vercel project. Vercel automatically populates the `KV_REST_API_URL` and `KV_REST_API_TOKEN` environment variables, routing analytics to your cloud database automatically.
+1. **Routing**: `vercel.json` rewrites `/api/*` requests to `api/index.py`, which imports `src.api.app`; Vercel serves static assets from `public/`.
+2. **Database Setup**: Configure `KV_REST_API_URL` and `KV_REST_API_TOKEN` in the deployment environment with your Upstash Redis REST credentials. Without these values, SQLite may be used and serverless data will not be durable.
 3. **Trigger Build**: Push your main branch to GitHub:
    ```bash
    git add .
@@ -107,7 +113,7 @@ Create a Google Form with fields: **Name**, **Email**, **Resume** (File Upload),
 
 ### 2. Copy the Apps Script
 1. In your Google Sheet, click **Extensions** -> **Apps Script**.
-2. Paste the contents of [scripts/apps_script.js](file:///Users/shouryatuhar/Downloads/docintel-ai-main/scripts/apps_script.js).
+2. Paste the contents of [`scripts/apps_script.js`](scripts/apps_script.js).
 3. Replace the `API_URL` variable with your Vercel deployment URL (e.g. `https://your-app.vercel.app/api/resume-fit`).
 4. Click Save.
 
@@ -122,7 +128,7 @@ Create a Google Form with fields: **Name**, **Email**, **Resume** (File Upload),
 
 ## Dashboard Calculations
 
-The Ops dashboard sheet is configured with the following reporting features:
+You can add the following reporting features to a separate Dashboard sheet:
 
 1. **Most Missing Skills Report**: Place this formula in your Dashboard sheet to parse missing skills, count them, and sort by highest occurrence:
    ```formula

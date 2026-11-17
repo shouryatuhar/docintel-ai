@@ -476,7 +476,7 @@
       letter-spacing: -0.02em;
     }
 
-    /* Flow 1: Outline Tree Styles */
+    /* Flow 1: Page-indexed document map */
     .document-title-banner {
       background-color: var(--bg-sidebar);
       border: 1px solid var(--border-color);
@@ -486,70 +486,120 @@
       font-size: 1.05rem;
     }
 
-    .outline-tree {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+    .document-map-layout {
+      display: grid;
+      grid-template-columns: minmax(250px, 0.8fr) minmax(0, 1.2fr);
+      gap: 18px;
+      align-items: start;
     }
 
-    .outline-node {
+    .document-map-sections {
       display: flex;
       flex-direction: column;
-      border-radius: 6px;
-      overflow: hidden;
+      gap: 10px;
+      max-height: 680px;
+      overflow: auto;
+      padding-right: 4px;
     }
 
-    .outline-header {
-      display: flex;
-      align-items: center;
-      padding: 10px 14px;
-      background-color: var(--bg-main);
+    .document-map-card {
+      background: var(--bg-main);
       border: 1px solid var(--border-color);
-      border-radius: 6px;
+      border-radius: 9px;
+      padding: 14px;
+    }
+
+    .document-map-card.active {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 16%, transparent);
+    }
+
+    .document-map-page {
+      border: 0;
+      background: none;
+      color: var(--accent-color);
       cursor: pointer;
-      user-select: none;
-      transition: background var(--transition-speed) ease;
+      font: inherit;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0;
+      margin-bottom: 7px;
     }
 
-    .outline-header:hover {
-      background-color: var(--bg-sidebar);
+    .document-map-heading {
+      font-size: 0.96rem;
+      font-weight: 650;
+      margin: 0 0 8px;
     }
 
-    .outline-chevron {
-      color: var(--text-muted);
-      margin-right: 10px;
-      font-size: 0.8rem;
-      transition: transform var(--transition-speed) ease;
-      width: 14px;
-      display: inline-block;
+    .document-map-excerpt {
+      color: var(--text-secondary);
+      font-size: 0.84rem;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .document-map-preview {
+      border: 1px solid var(--border-color);
+      border-radius: 9px;
+      overflow: hidden;
+      background: var(--bg-sidebar);
+    }
+
+    .document-map-preview iframe {
+      display: block;
+      width: 100%;
+      height: 680px;
+      border: 0;
+      background: white;
+    }
+
+    .document-map-preview-empty {
+      min-height: 280px;
+      display: grid;
+      place-content: center;
+      padding: 24px;
+      color: var(--text-secondary);
       text-align: center;
-    }
-
-    .outline-chevron.expanded {
-      transform: rotate(90deg);
-    }
-
-    .outline-node-text {
-      flex: 1;
       font-size: 0.9rem;
-      font-weight: 500;
     }
 
-    .outline-node-page {
-      font-size: 0.8rem;
-      color: var(--text-muted);
+    .invoice-findings, .invoice-documents {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
     }
 
-    .outline-children {
-      display: none;
-      padding-left: 24px;
-      flex-direction: column;
-      gap: 6px;
-      margin-top: 6px;
+    .invoice-review-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 16px;
+      min-width: 0;
     }
 
-    .outline-children.expanded {
-      display: flex;
+    .invoice-review-card h3 { margin: 0 0 12px; font-size: 1rem; }
+    .invoice-field { padding: 10px 0; border-top: 1px solid var(--border-color); }
+    .invoice-field-label { color: var(--text-secondary); font-size: 0.78rem; }
+    .invoice-field-value { font-weight: 600; margin-top: 3px; overflow-wrap: anywhere; }
+    .invoice-field-evidence { color: var(--text-muted); font-size: 0.76rem; line-height: 1.4; margin-top: 5px; }
+    .invoice-finding { border-top: 1px solid var(--border-color); padding: 12px 0; }
+    .invoice-finding-header { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+    .invoice-finding-label { font-weight: 600; }
+    .invoice-status { border-radius: 999px; padding: 4px 9px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+    .invoice-status.matched { background: var(--green-bg); color: var(--green-text); }
+    .invoice-status.mismatch { background: var(--red-bg); color: var(--red-text); }
+    .invoice-status.needs_review { background: var(--orange-bg); color: var(--orange-text); }
+    .invoice-finding-message { color: var(--text-secondary); font-size: 0.84rem; line-height: 1.45; margin: 7px 0; }
+
+    @media (max-width: 640px) {
+      .invoice-findings, .invoice-documents { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      .document-map-layout { grid-template-columns: 1fr; }
+      .document-map-sections { max-height: 420px; }
+      .document-map-preview iframe { height: 65vh; }
     }
 
     /* Flow 2: Finder Cards */
@@ -1025,7 +1075,11 @@
     <nav class="sidebar-nav">
       <button class="nav-button active" data-tab="outline">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-        Document Navigator
+        Document Map
+      </button>
+      <button class="nav-button" data-tab="invoice">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 3h16v18l-3-2-3 2-3-2-3 2-4-2z"/><path d="M8 8h8M8 12h5M8 16h8"/></svg>
+        Invoice Review
       </button>
       <button class="nav-button" data-tab="persona">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -1054,10 +1108,10 @@
   <!-- Main View Container -->
   <main>
     
-    <!-- PANEL 1: DOCUMENT NAVIGATOR (OUTLINE) -->
+    <!-- PANEL 1: DOCUMENT MAP -->
     <section id="panel-outline" class="panel active">
-      <h1 class="page-title">Document Navigator</h1>
-      <p class="page-subtitle">See the important parts of your document quickly by generating a collapsible table of contents.</p>
+      <h1 class="page-title">Document Map</h1>
+      <p class="page-subtitle">Scan detected sections, read a short excerpt, and jump to that page in the PDF.</p>
       
       <div class="form-group">
         <label class="form-label">Upload your PDF document</label>
@@ -1076,11 +1130,11 @@
         </div>
       </div>
 
-      <button type="button" class="btn-submit" id="btn-outline-submit" disabled>See what's inside</button>
+      <button type="button" class="btn-submit" id="btn-outline-submit" disabled>Build document map</button>
 
       <div class="status-container loading" id="status-outline-loading">
         <div class="spinner"></div>
-        <span>Analyzing document structure...</span>
+        <span>Extracting sections and page references...</span>
       </div>
       <div class="status-container error" id="status-outline-error">
         <span>An error occurred.</span>
@@ -1089,12 +1143,50 @@
       <!-- Result View -->
       <div class="results-wrapper" id="results-outline">
         <div class="results-header-section">
-          <h2 class="results-title">Document Outline</h2>
+          <h2 class="results-title">Document map</h2>
         </div>
         <div class="document-title-banner" id="outline-doc-title">Document Title</div>
-        <div class="outline-tree" id="outline-tree-container">
-          <!-- Outline nodes appended here -->
+        <div class="document-map-layout">
+          <div class="document-map-sections" id="document-map-sections"></div>
+          <div class="document-map-preview" id="document-map-preview">
+            <div class="document-map-preview-empty">Upload a PDF to preview pages here.</div>
+          </div>
         </div>
+      </div>
+    </section>
+
+    <!-- INVOICE REVIEW -->
+    <section id="panel-invoice" class="panel">
+      <h1 class="page-title">Invoice Review Assistant</h1>
+      <p class="page-subtitle">Compare an invoice with its purchase order. Every extracted value keeps its source text and page so you can verify it.</p>
+
+      <div class="form-group">
+        <label class="form-label">Invoice PDF</label>
+        <div class="drop-zone" id="invoice-drop-zone">
+          <div class="drop-zone-prompt"><span>Drop invoice here or <strong>browse files</strong></span><span class="file-format-hint">Selectable-text PDF, up to 15 MB</span></div>
+          <div class="selected-file-info"><span class="file-name-text">invoice.pdf</span><button type="button" class="clear-file-btn">Clear</button></div>
+          <input type="file" id="invoice-file-input" class="drop-zone-input" accept="application/pdf,.pdf">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Purchase order PDF</label>
+        <div class="drop-zone" id="po-drop-zone">
+          <div class="drop-zone-prompt"><span>Drop purchase order here or <strong>browse files</strong></span><span class="file-format-hint">Selectable-text PDF, up to 15 MB</span></div>
+          <div class="selected-file-info"><span class="file-name-text">purchase-order.pdf</span><button type="button" class="clear-file-btn">Clear</button></div>
+          <input type="file" id="po-file-input" class="drop-zone-input" accept="application/pdf,.pdf">
+        </div>
+      </div>
+
+      <button type="button" class="btn-submit" id="btn-invoice-submit" disabled>Review invoice</button>
+      <div class="status-container loading" id="status-invoice-loading"><div class="spinner"></div><span>Extracting fields and checking against the PO...</span></div>
+      <div class="status-container error" id="status-invoice-error"><span>An error occurred.</span></div>
+
+      <div class="results-wrapper" id="results-invoice">
+        <div class="results-header-section"><h2 class="results-title">Review results</h2></div>
+        <div class="document-title-banner" id="invoice-review-summary"></div>
+        <div class="invoice-findings" id="invoice-findings"></div>
+        <div class="invoice-documents" id="invoice-documents"></div>
       </div>
     </section>
 
@@ -1319,11 +1411,12 @@
     const sidebar = document.getElementById("sidebar");
     const sidebarToggle = document.getElementById("sidebar-toggle-mobile");
     let currentAnalysisId = null;
+    let currentDocumentObjectUrl = null;
 
     // Load active tab from URL hash or default
     function initTabs() {
       let initialTab = window.location.hash.replace("#", "") || "outline";
-      if (!["outline", "persona", "resumefit", "history", "stats"].includes(initialTab)) {
+      if (!["outline", "invoice", "persona", "resumefit", "history", "stats"].includes(initialTab)) {
         initialTab = "outline";
       }
       switchTab(initialTab);
@@ -1450,6 +1543,8 @@
 
     // Setup dropzones
     setupDragAndDrop("outline-drop-zone", "outline-file-input", "btn-outline-submit");
+    setupDragAndDrop("invoice-drop-zone", "invoice-file-input", "btn-invoice-submit", checkInvoiceInputs);
+    setupDragAndDrop("po-drop-zone", "po-file-input", "btn-invoice-submit", checkInvoiceInputs);
     setupDragAndDrop("persona-drop-zone", "persona-file-input", "btn-persona-submit", () => checkPersonaInputs());
     setupDragAndDrop("resume-drop-zone", "resume-file-input", "btn-resume-submit", () => checkResumeInputs());
 
@@ -1478,6 +1573,12 @@
       const fileSelected = document.getElementById("resume-file-input").files.length > 0;
       const jobDescVal = inputJobDescription.value.trim();
       btnResumeSubmit.disabled = !(fileSelected && jobDescVal);
+    }
+
+    function checkInvoiceInputs() {
+      const invoiceSelected = document.getElementById("invoice-file-input").files.length > 0;
+      const poSelected = document.getElementById("po-file-input").files.length > 0;
+      document.getElementById("btn-invoice-submit").disabled = !(invoiceSelected && poSelected);
     }
 
     // Generic fetch helper
@@ -1546,23 +1647,13 @@
       }
     }
 
-    // Dynamic collapsible tree toggle
-    function toggleOutline(headerElement) {
-      const chevron = headerElement.querySelector(".outline-chevron");
-      chevron.classList.toggle("expanded");
-      const children = headerElement.nextElementSibling;
-      if (children) {
-        children.classList.toggle("expanded");
-      }
-    }
-
-    // Flow 1: Outline extraction request
+    // Flow 1: Build a page-indexed document map
     document.getElementById("btn-outline-submit").addEventListener("click", async () => {
       const fileInput = document.getElementById("outline-file-input");
       const loader = document.getElementById("status-outline-loading");
       const errorMsg = document.getElementById("status-outline-error");
       const resultWrap = document.getElementById("results-outline");
-      const treeContainer = document.getElementById("outline-tree-container");
+      const sectionsContainer = document.getElementById("document-map-sections");
       const titleBanner = document.getElementById("outline-doc-title");
 
       if (!fileInput.files.length) return;
@@ -1577,15 +1668,10 @@
 
       try {
         const data = await postFormData("/api/outline", formData);
-        titleBanner.textContent = data.title || fileInput.files[0].name;
-        
-        // Render tree
-        treeContainer.innerHTML = "";
-        if (data.outline && data.outline.length) {
-          renderOutlineNodes(treeContainer, data.outline);
-        } else {
-          treeContainer.innerHTML = `<div style="font-style:italic;color:var(--text-secondary);padding:10px;">No sections found in this document.</div>`;
-        }
+        titleBanner.textContent = `${data.filename || fileInput.files[0].name} · ${(data.sections || []).length} sections`;
+        if (currentDocumentObjectUrl) URL.revokeObjectURL(currentDocumentObjectUrl);
+        currentDocumentObjectUrl = URL.createObjectURL(fileInput.files[0]);
+        renderDocumentMap(sectionsContainer, data.sections || [], currentDocumentObjectUrl);
 
         resultWrap.style.display = "flex";
         loader.style.display = "none";
@@ -1593,7 +1679,7 @@
         errorMsg.querySelector("span").textContent = "";
         
         // Save to activity history
-        saveToHistory("outline", "Document Outline Analysis", data);
+        saveToHistory("outline", "Document Map Analysis", data);
         
         // Show feedback widget inside outline results
         showFeedbackWidget(data.analysis_id || 1, "results-outline");
@@ -1604,29 +1690,167 @@
       }
     });
 
-    function renderOutlineNodes(container, nodes) {
-      nodes.forEach(node => {
-        const nodeEl = document.createElement("div");
-        nodeEl.className = "outline-node";
+    function renderDocumentMap(container, sections, documentUrl = null) {
+      container.innerHTML = "";
+      const preview = document.getElementById("document-map-preview");
+      preview.innerHTML = documentUrl
+        ? `<iframe title="Uploaded PDF preview" src="${documentUrl}#page=1&toolbar=0"></iframe>`
+        : `<div class="document-map-preview-empty">Re-upload this PDF to preview its pages. Your saved map keeps section names and excerpts only.</div>`;
 
-        const hasChildren = node.children && node.children.length > 0;
-        
-        nodeEl.innerHTML = `
-          <div class="outline-header" ${hasChildren ? 'onclick="toggleOutline(this)"' : ''}>
-            <span class="outline-chevron" style="visibility: ${hasChildren ? 'visible' : 'hidden'}">▸</span>
-            <span class="outline-node-text">${escapeHtml(node.text)}</span>
-            <span class="outline-node-page">Page ${node.page}</span>
-          </div>
-        `;
+      if (!sections.length) {
+        container.innerHTML = `<div class="history-empty">No readable sections were found. This PDF may be image-only or have an unusual layout.</div>`;
+        return;
+      }
 
-        if (hasChildren) {
-          const childrenContainer = document.createElement("div");
-          childrenContainer.className = "outline-children";
-          renderOutlineNodes(childrenContainer, node.children);
-          nodeEl.appendChild(childrenContainer);
-        }
+      sections.forEach((section, index) => {
+        const card = document.createElement("article");
+        card.className = `document-map-card${index === 0 ? " active" : ""}`;
+        const pageButton = document.createElement("button");
+        pageButton.type = "button";
+        pageButton.className = "document-map-page";
+        pageButton.textContent = `PAGE ${section.page}`;
+        pageButton.disabled = !documentUrl;
+        pageButton.addEventListener("click", () => {
+          const iframe = preview.querySelector("iframe");
+          if (!iframe) return;
+          iframe.src = `${documentUrl}#page=${Number(section.page) || 1}&toolbar=0`;
+          container.querySelectorAll(".document-map-card").forEach(item => item.classList.remove("active"));
+          card.classList.add("active");
+        });
 
-        container.appendChild(nodeEl);
+        const heading = document.createElement("h3");
+        heading.className = "document-map-heading";
+        heading.textContent = section.section_title || `Section ${index + 1}`;
+        const excerpt = document.createElement("p");
+        excerpt.className = "document-map-excerpt";
+        excerpt.textContent = section.excerpt || "No text excerpt was extracted for this section.";
+        card.append(pageButton, heading, excerpt);
+        container.appendChild(card);
+      });
+    }
+
+    document.getElementById("btn-invoice-submit").addEventListener("click", async () => {
+      const invoiceFile = document.getElementById("invoice-file-input").files[0];
+      const purchaseOrderFile = document.getElementById("po-file-input").files[0];
+      if (!invoiceFile || !purchaseOrderFile) return;
+
+      const loader = document.getElementById("status-invoice-loading");
+      const error = document.getElementById("status-invoice-error");
+      const results = document.getElementById("results-invoice");
+      loader.style.display = "flex";
+      error.style.display = "none";
+      results.style.display = "none";
+      hideFeedbackWidget();
+
+      const formData = new FormData();
+      formData.append("invoice", invoiceFile);
+      formData.append("purchase_order", purchaseOrderFile);
+      try {
+        const data = await postFormData("/api/invoice-review", formData);
+        renderInvoiceReview(data);
+        results.style.display = "flex";
+        loader.style.display = "none";
+        saveToHistory("invoice-review", `${invoiceFile.name} vs ${purchaseOrderFile.name}`, data);
+        showFeedbackWidget(data.analysis_id || 1, "results-invoice");
+      } catch (err) {
+        loader.style.display = "none";
+        error.style.display = "flex";
+        error.querySelector("span").textContent = err.message;
+      }
+    });
+
+    function renderInvoiceReview(data) {
+      const findingsContainer = document.getElementById("invoice-findings");
+      const documentsContainer = document.getElementById("invoice-documents");
+      findingsContainer.innerHTML = "";
+      documentsContainer.innerHTML = "";
+      const findings = data.findings || [];
+      const counts = { matched: 0, mismatch: 0, needs_review: 0 };
+      findings.forEach(item => { counts[item.status] = (counts[item.status] || 0) + 1; });
+      document.getElementById("invoice-review-summary").textContent =
+        `${counts.matched} matched · ${counts.mismatch} mismatch · ${counts.needs_review} need review`;
+
+      const findingsCard = document.createElement("section");
+      findingsCard.className = "invoice-review-card";
+      const findingsTitle = document.createElement("h3");
+      findingsTitle.textContent = "Checks";
+      findingsCard.appendChild(findingsTitle);
+      findings.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "invoice-finding";
+        const header = document.createElement("div");
+        header.className = "invoice-finding-header";
+        const label = document.createElement("span");
+        label.className = "invoice-finding-label";
+        label.textContent = item.label;
+        const status = document.createElement("span");
+        status.className = `invoice-status ${item.status}`;
+        status.textContent = item.status.replace("_", " ");
+        header.append(label, status);
+        const message = document.createElement("p");
+        message.className = "invoice-finding-message";
+        message.textContent = item.message;
+        row.append(header, message);
+        (item.evidence || []).forEach(source => {
+          if (!source.evidence) return;
+          const evidence = document.createElement("div");
+          evidence.className = "invoice-field-evidence";
+          evidence.textContent = `${source.document}${source.page ? ` · page ${source.page}` : ""}: ${source.evidence}`;
+          row.appendChild(evidence);
+        });
+        findingsCard.appendChild(row);
+      });
+      findingsContainer.appendChild(findingsCard);
+
+      [["Invoice", data.invoice], ["Purchase order", data.purchase_order]].forEach(([title, documentData]) => {
+        const card = document.createElement("section");
+        card.className = "invoice-review-card";
+        const heading = document.createElement("h3");
+        heading.textContent = title;
+        card.appendChild(heading);
+        Object.entries(documentData || {}).forEach(([key, field]) => {
+          if (Array.isArray(field)) {
+            field.forEach(lineItem => {
+              const item = document.createElement("div");
+              item.className = "invoice-field";
+              const fieldLabel = document.createElement("div");
+              fieldLabel.className = "invoice-field-label";
+              fieldLabel.textContent = lineItem.description || "Line item";
+              const value = document.createElement("div");
+              value.className = "invoice-field-value";
+              value.textContent = `${lineItem.quantity} × $${Number(lineItem.unit_price).toFixed(2)} = $${Number(lineItem.line_total).toFixed(2)}`;
+              const evidence = document.createElement("div");
+              evidence.className = "invoice-field-evidence";
+              evidence.textContent = `Page ${lineItem.page}: ${lineItem.evidence}`;
+              item.append(fieldLabel, value, evidence);
+              card.appendChild(item);
+            });
+            if (!field.length) {
+              const empty = document.createElement("div");
+              empty.className = "invoice-field-evidence";
+              empty.textContent = "No supported line-item rows extracted.";
+              card.appendChild(empty);
+            }
+            return;
+          }
+          const item = document.createElement("div");
+          item.className = "invoice-field";
+          const fieldLabel = document.createElement("div");
+          fieldLabel.className = "invoice-field-label";
+          fieldLabel.textContent = key.replaceAll("_", " ");
+          const value = document.createElement("div");
+          value.className = "invoice-field-value";
+          value.textContent = field.value || "Not extracted — review manually";
+          item.append(fieldLabel, value);
+          if (field.evidence) {
+            const evidence = document.createElement("div");
+            evidence.className = "invoice-field-evidence";
+            evidence.textContent = `Page ${field.page}: ${field.evidence}`;
+            item.appendChild(evidence);
+          }
+          card.appendChild(item);
+        });
+        documentsContainer.appendChild(card);
       });
     }
 
@@ -1888,8 +2112,11 @@
         let iconSvg = "";
 
         if (item.workflow === "outline") {
-          typeLabel = "Document Outline";
+          typeLabel = "Document Map";
           iconSvg = `<svg class="history-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>`;
+        } else if (item.workflow === "invoice-review") {
+          typeLabel = "Invoice Review";
+          iconSvg = `<svg class="history-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 3h16v18l-3-2-3 2-3-2-3 2-4-2z"/><path d="M8 8h8M8 12h5M8 16h8"/></svg>`;
         } else if (item.workflow === "persona") {
           typeLabel = "Information Finder";
           iconSvg = `<svg class="history-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
@@ -1927,12 +2154,16 @@
       if (item.workflow === "outline") {
         switchTab("outline");
         const titleBanner = document.getElementById("outline-doc-title");
-        const treeContainer = document.getElementById("outline-tree-container");
+        const sectionsContainer = document.getElementById("document-map-sections");
         const resultWrap = document.getElementById("results-outline");
 
-        titleBanner.textContent = item.payload.title || "Document Outline";
-        treeContainer.innerHTML = "";
-        renderOutlineNodes(treeContainer, item.payload.outline);
+        const sections = item.payload.sections || (item.payload.outline || []).map(node => ({
+          section_title: node.text,
+          page: node.page,
+          excerpt: "Older saved result: run the analysis again to see section excerpts and PDF page preview.",
+        }));
+        titleBanner.textContent = `${item.payload.filename || item.payload.title || "Saved document"} · ${sections.length} sections`;
+        renderDocumentMap(sectionsContainer, sections, null);
         resultWrap.style.display = "flex";
         document.getElementById("status-outline-loading").style.display = "none";
         document.getElementById("status-outline-error").style.display = "none";
@@ -1940,6 +2171,14 @@
         
         showFeedbackWidget(item.payload.analysis_id || 1, "results-outline");
       } 
+      else if (item.workflow === "invoice-review") {
+        switchTab("invoice");
+        renderInvoiceReview(item.payload);
+        document.getElementById("results-invoice").style.display = "flex";
+        document.getElementById("status-invoice-loading").style.display = "none";
+        document.getElementById("status-invoice-error").style.display = "none";
+        showFeedbackWidget(item.payload.analysis_id || 1, "results-invoice");
+      }
       else if (item.workflow === "persona") {
         switchTab("persona");
         const resultWrap = document.getElementById("results-persona");
@@ -2076,17 +2315,28 @@
         const wf = data.workflows || {};
         
         const outlineCount = wf.outline || 0;
+        const invoiceCount = wf["invoice-review"] || 0;
         const personaCount = wf.persona || 0;
         const resumeCount = wf["resume-fit"] || 0;
         
         const outlinePct = ((outlineCount / total) * 100).toFixed(0);
+        const invoicePct = ((invoiceCount / total) * 100).toFixed(0);
         const personaPct = ((personaCount / total) * 100).toFixed(0);
         const resumePct = ((resumeCount / total) * 100).toFixed(0);
         
         distContainer.innerHTML = `
           <div class="workflow-item">
             <div class="workflow-label-row">
-              <span>Document Navigator (Outline)</span>
+              <span>Invoice Review</span>
+              <span>${invoiceCount} (${invoicePct}%)</span>
+            </div>
+            <div class="workflow-bar-bg">
+              <div class="workflow-bar-fill" style="width: ${invoicePct}%;"></div>
+            </div>
+          </div>
+          <div class="workflow-item">
+            <div class="workflow-label-row">
+              <span>Document Map</span>
               <span>${outlineCount} (${outlinePct}%)</span>
             </div>
             <div class="workflow-bar-bg">

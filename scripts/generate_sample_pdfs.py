@@ -9,6 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 INPUT_DIR = ROOT / "samples" / "input"
 PERSONA_DIR = ROOT / "samples" / "persona"
+INVOICE_DIR = ROOT / "samples" / "invoice_review"
 
 
 def _escape_pdf_text(text: str) -> str:
@@ -60,6 +61,7 @@ def main() -> None:
     """Generate sample PDFs and persona manifest."""
     INPUT_DIR.mkdir(parents=True, exist_ok=True)
     PERSONA_DIR.mkdir(parents=True, exist_ok=True)
+    INVOICE_DIR.mkdir(parents=True, exist_ok=True)
     (ROOT / "samples" / "output").mkdir(parents=True, exist_ok=True)
     (PERSONA_DIR / "output").mkdir(parents=True, exist_ok=True)
 
@@ -108,6 +110,32 @@ def main() -> None:
     with (PERSONA_DIR / "challenge1b_input.json").open("w", encoding="utf-8") as handle:
         json.dump(manifest, handle, indent=2)
         handle.write("\n")
+
+    write_simple_pdf(
+        INVOICE_DIR / "invoice.pdf",
+        [
+            ("ACME OFFICE SUPPLY", 18, True),
+            ("INVOICE", 16, True),
+            ("Vendor: Acme Office Supply", 11, False),
+            ("Invoice Number: INV-2026-104", 11, False),
+            ("Invoice Date: 10/28/2026", 11, False),
+            ("PO Number: PO-3015", 11, False),
+            ("Item: Printer paper | Qty: 4 | Unit Price: 12.00 | Line Total: 48.00", 9, False),
+            ("Item: Toner cartridge | Qty: 2 | Unit Price: 600.00 | Line Total: 1200.00", 9, False),
+            ("Grand Total: $1,248.00", 14, True),
+        ],
+    )
+    write_simple_pdf(
+        INVOICE_DIR / "purchase_order.pdf",
+        [
+            ("PURCHASE ORDER", 18, True),
+            ("Vendor: Acme Office Supply", 11, False),
+            ("PO Number: PO-3015", 11, False),
+            ("Item: Printer paper | Qty: 4 | Unit Price: 12.00 | Line Total: 48.00", 9, False),
+            ("Item: Toner cartridge | Qty: 2 | Unit Price: 576.00 | Line Total: 1152.00", 9, False),
+            ("Order Total: $1,200.00", 14, True),
+        ],
+    )
 
     print(f"Wrote samples under {ROOT / 'samples'}")
 

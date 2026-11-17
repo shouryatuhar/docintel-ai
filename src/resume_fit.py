@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import threading
 from pathlib import Path
 from typing import Any
 
@@ -16,6 +17,7 @@ from .section_splitter import split_sections
 # Global mappings to transfer state between extraction and analysis
 _CASING_MAP: dict[str, str] = {}
 _WEIGHTS_MAP: dict[str, float] = {}
+_ANALYSIS_LOCK = threading.RLock()
 
 # Pre-defined Skill Categories for Lexicon Matching
 SKILL_CATEGORIES = {
@@ -461,15 +463,20 @@ def generate_explanation(
     return explanation
 
 
-def analyze_resume_fit(
+def _analyze_resume_fit_unlocked(
     resume_name: str,
     resume_path: Path,
     job_description: str
 ) -> dict[str, Any]:
     """Execute the complete resume fit checker pipeline with weighted matching."""
+    if not job_description.strip():
+        raise ValueError("Job description must contain text")
+
     # 1. Read entire text and split into sections
     pages = extract_text_by_page(resume_path)
     resume_text = " ".join(pages)
+    if not resume_text.strip():
+        raise ValueError("No selectable text found in the resume PDF; scanned PDFs need OCR first")
 
     # 2. Extract sections using font/heading logic
     sections = split_sections(resume_name, resume_path)
@@ -557,3 +564,19 @@ def analyze_resume_fit(
         "relevant_sections": relevant_sections,
         "improvement_suggestions": improvement_suggestions
     }
+
+
+def analyze_resume_fit(
+    resume_name: str,
+    resume_path: Path,
+    job_description: str,
+) -> dict[str, Any]:
+    """Run one analysis atomically because keyword metadata is module-scoped.
+
+    FastAPI can process synchronous endpoints on multiple worker threads. The
+    extractor currently stores weights and display casing in module-level
+    maps, so serialize this workflow to prevent concurrent requests mixing
+    those values and returning incorrect scores or labels.
+    """
+    with _ANALYSIS_LOCK:
+        return _analyze_resume_fit_unlocked(resume_name, resume_path, job_description)

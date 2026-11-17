@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import shutil
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -13,14 +12,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
 from .outline_extractor import extract_outline
-from .output_formatter import build_output_json
+from .output_formatter import build_output_json, trim_at_sentence_boundary
 from .relevance_scorer import rank_sections
 from .section_splitter import split_sections
 from .resume_fit import analyze_resume_fit
+from .invoice_review import review_invoice
 from .database import init_db, log_event, log_feedback, get_metrics
 
 APP_ROOT = Path(__file__).resolve().parent.parent
 FRONTEND_FILE = APP_ROOT / "frontend" / "index.html"
+MAX_UPLOAD_BYTES = 15 * 1024 * 1024
 
 app = FastAPI(title="DocIntel AI API")
 
@@ -54,8 +55,24 @@ def _save_upload(upload: UploadFile, target_dir: Path) -> tuple[str, Path]:
     while output_path.exists():
         output_path = target_dir / f"{counter}_{filename}"
         counter += 1
+    # Enforce a bounded request payload while streaming; do not trust the
+    # client-provided Content-Length header for uploaded files.
+    total = 0
     with output_path.open("wb") as handle:
-        shutil.copyfileobj(upload.file, handle)
+        while chunk := upload.file.read(1024 * 1024):
+            total += len(chunk)
+            if total > MAX_UPLOAD_BYTES:
+                output_path.unlink(missing_ok=True)
+                raise HTTPException(
+                    status_code=413,
+                    detail=f"PDF exceeds the {MAX_UPLOAD_BYTES // (1024 * 1024)} MB upload limit",
+                )
+            handle.write(chunk)
+    with output_path.open("rb") as handle:
+        header = handle.read(1024)
+    if b"%PDF-" not in header:
+        output_path.unlink(missing_ok=True)
+        raise HTTPException(status_code=400, detail=f"{filename} does not appear to be a PDF")
     return filename, output_path
 
 
@@ -70,7 +87,7 @@ async def serve_frontend() -> FileResponse:
 @app.post("/outline")
 @app.post("/api/outline")
 async def outline(file: UploadFile = File(...)) -> dict:
-    """Extract a title and heading outline from one PDF."""
+    """Build a page-indexed document map with section excerpts."""
     start_time = time.perf_counter()
     size_bytes = 0
     with TemporaryDirectory() as temp_dir:
@@ -78,6 +95,16 @@ async def outline(file: UploadFile = File(...)) -> dict:
         try:
             size_bytes = pdf_path.stat().st_size
             res = extract_outline(pdf_path)
+            sections = split_sections(filename, pdf_path)
+            res["filename"] = filename
+            res["sections"] = [
+                {
+                    "section_title": section["section_title"],
+                    "page": section["page"],
+                    "excerpt": trim_at_sentence_boundary(section["text"], max_length=360),
+                }
+                for section in sections
+            ]
             duration_ms = int((time.perf_counter() - start_time) * 1000)
             event_id = log_event(
                 workflow="outline",
@@ -190,6 +217,44 @@ async def resume_fit(
                 duration_ms=duration_ms,
                 success=False
             )
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/invoice-review")
+@app.post("/api/invoice-review")
+async def invoice_review(
+    invoice: UploadFile = File(...),
+    purchase_order: UploadFile = File(...),
+) -> dict:
+    """Extract invoice / PO header fields and return evidence-backed checks."""
+    start_time = time.perf_counter()
+    total_size_bytes = 0
+    with TemporaryDirectory() as temp_dir:
+        temp_path = Path(temp_dir)
+        try:
+            invoice_name, invoice_path = _save_upload(invoice, temp_path)
+            po_name, po_path = _save_upload(purchase_order, temp_path)
+            total_size_bytes = invoice_path.stat().st_size + po_path.stat().st_size
+            result = review_invoice(invoice_path, po_path)
+            result["documents"] = {"invoice": invoice_name, "purchase_order": po_name}
+            duration_ms = int((time.perf_counter() - start_time) * 1000)
+            result["analysis_id"] = log_event(
+                workflow="invoice-review",
+                size_bytes=total_size_bytes,
+                duration_ms=duration_ms,
+                success=True,
+            )
+            return result
+        except Exception as exc:  # noqa: BLE001
+            duration_ms = int((time.perf_counter() - start_time) * 1000)
+            log_event(
+                workflow="invoice-review",
+                size_bytes=total_size_bytes,
+                duration_ms=duration_ms,
+                success=False,
+            )
+            if isinstance(exc, HTTPException):
+                raise exc
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
