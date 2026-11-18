@@ -83,7 +83,7 @@ To run the application locally:
 
 The backend integrates FastAPI with Vercel serverless functions (`@vercel/python`).
 
-1. **Routing**: `vercel.json` rewrites `/api/*` requests to `api/index.py`, which imports `src.api.app`; Vercel serves static assets from `public/`.
+1. **Routing**: Vercel detects the FastAPI app exported from `src/index.py` and serves its routes directly. Static assets in `public/` are served by Vercel; the app page is also available from the FastAPI root route for local development.
 2. **Database Setup**: Configure `KV_REST_API_URL` and `KV_REST_API_TOKEN` in the deployment environment with your Upstash Redis REST credentials. Without these values, SQLite may be used and serverless data will not be durable.
 3. **Trigger Build**: Push your main branch to GitHub:
    ```bash
